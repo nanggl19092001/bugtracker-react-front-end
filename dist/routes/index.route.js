@@ -1,8 +1,10 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const logger = require('../utils/logger');
+const IndexController = require('../controllers/index.controller');
 function route(app) {
+    app.get('/login', IndexController.loginPage);
     app.get('/', (req, res) => {
-        logger.info(`${new Date()} ${"GET"} ${req.route.path}`);
         return res.render('home');
     });
 }

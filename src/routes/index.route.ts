@@ -1,8 +1,14 @@
-const logger = require('../utils/logger')
+import { Express } from "express"
 
-function route(app: any) {
+const logger = require('../utils/logger')
+const IndexController: IndexController = require('../controllers/index.controller')
+
+function route(app: Express) {
+
+    app.get('/login', IndexController.loginPage)
+
     app.get('/', (req: any,res: any) => {
-        logger.info(`${new Date()} ${"GET"} ${req.route.path}`)
+        
         return res.render('home')
     })
 }
