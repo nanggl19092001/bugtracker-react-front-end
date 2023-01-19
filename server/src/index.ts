@@ -1,12 +1,16 @@
+require('dotenv').config()
+
 const express = require('express')
-const app = express()
 const path = require('path')
+const app = express()
 const cors = require('cors')
 const { engine } = require('express-handlebars')
-const PORT = 3000
+const DBConnection = require('../database')
 
 const classUser = require('./middleware/user')
 const routes = require('./routes/index.route')
+
+const PORT = 3000 || process.env.PORT
 
 app.use(cors())
 app.use(express.json())
