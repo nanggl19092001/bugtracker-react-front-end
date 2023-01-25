@@ -37,16 +37,20 @@ function Register() {
         try {
             let res = await fetch("http://localhost:3000/auth/signup", {
                 method:"POST",
+                headers:{
+                  "Content-Type":"application/json",
+                },
                 body: JSON.stringify({
                     email:email,
-                    firstName: firstName,
-                    lastName: lastName,
-                    password:password             
+                    firstname: firstName,
+                    lastname: lastName,
+                    password: password             
                 }),
             })
             let resJson = await res.json()
             if(resJson.status === 200){
                 setMessage('Create Account Successfully')
+                console.log("Register Successfully");
             }else{
                 setMessage(resJson.message)
             }
