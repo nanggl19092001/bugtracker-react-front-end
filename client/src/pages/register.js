@@ -1,13 +1,18 @@
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
+import {useNavigate} from "react-router-dom";
+import { AppContext } from '../Context/AppContext';
 
 function Register() {
+    const {setNotify} = useContext(AppContext)
+
     const [firstName, setFirstName] = useState(null);
     const [lastName, setLastName] = useState(null);
     const [email, setEmail] = useState(null);
     const [password,setPassword] = useState(null);
     const [confirmPassword,setConfirmPassword] = useState(null);
     const [message, setMessage] = useState('');
-
+    const navigate = useNavigate();
+  
     const handleFirstName = (e) => {
         setFirstName(e.target.value);
       };
@@ -35,7 +40,7 @@ function Register() {
             return;
         }
         try {
-            let res = await fetch("http://localhost:3000/auth/signup", {
+            let res = await fetch("http://localhost:5000/auth/signup", {
                 method:"POST",
                 headers:{
                   "Content-Type":"application/json",
@@ -49,8 +54,9 @@ function Register() {
             })
             let resJson = await res.json()
             if(resJson.status === 200){
-                setMessage('Create Account Successfully')
+                setNotify('Register Successfully')
                 console.log("Register Successfully");
+                navigate('/login')
             }else{
                 setMessage(resJson.message)
             }
@@ -138,7 +144,7 @@ function Register() {
                   </a>
                 </p>
                 {message ? 
-                <div className="bg-yellow-100 rounded-lg py-5 px-6 mb-4 text-base text-yellow-700 mb-3" role="alert">
+                <div className="bg-red-100 rounded-lg py-5 px-6 mb-4 text-base text-red-700 mb-3" role="alert">
                 {message}
                 </div> : ''}
                 
