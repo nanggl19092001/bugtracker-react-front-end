@@ -4,7 +4,7 @@ import { AppContext } from "../Context/AppContext";
 import { SERVER_DOMAIN } from '../utils/Constaint'
 
 function Login() {
-  const {notify, setNotify} = useContext(AppContext)
+  const {notify} = useContext(AppContext)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
