@@ -5,9 +5,9 @@ function Footer() {
       <div
         className="text-gray-700 text-center p-4"
       >
-        © 2023 Copyright:
+        © 2023 Copyright: TeamNaDa
         <a className="text-gray-800 my-2" href="/#">
-           Contact Me: 123-456-7890
+           {` Contact Me: 123-456-7890`}
         </a>
       </div>
     </footer>
