@@ -1,6 +1,10 @@
 import React, {useContext, useState} from 'react'
 import {useNavigate} from "react-router-dom";
 import { AppContext } from '../Context/AppContext';
+<<<<<<< HEAD
+=======
+import { SERVER_DOMAIN } from '../utils/Constaint'
+>>>>>>> 09d2e8bd31ed6434ccf1e3a9e5eacf1f6f229819
 
 function Register() {
     const {setNotify} = useContext(AppContext)
@@ -40,11 +44,16 @@ function Register() {
             return;
         }
         try {
+<<<<<<< HEAD
             let res = await fetch("http://localhost:5000/auth/signup", {
                 method:"POST",
                 headers:{
                   "Content-Type":"application/json",
                 },
+=======
+            let res = await fetch(`${SERVER_DOMAIN}/auth/signup`, {
+                method:"POST",
+>>>>>>> 09d2e8bd31ed6434ccf1e3a9e5eacf1f6f229819
                 body: JSON.stringify({
                     email:email,
                     firstname: firstName,
@@ -74,7 +83,11 @@ function Register() {
             <img
               src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
               className="w-full"
+<<<<<<< HEAD
               alt="good"
+=======
+              alt="Sample"
+>>>>>>> 09d2e8bd31ed6434ccf1e3a9e5eacf1f6f229819
             />
           </div>
           <div className="xl:ml-20 xl:w-5/12 lg:w-5/12 md:w-8/12 mb-12 md:mb-0">
