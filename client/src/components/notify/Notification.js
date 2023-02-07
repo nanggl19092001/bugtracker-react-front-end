@@ -11,6 +11,10 @@ const Notification = ({ message, type }) => {
     return () => clearTimeout(timer);
   }, [type]);
 
+  setTimeout(() => {
+    message = ""
+  }, 5000);
+  
   if (!isVisible) {
     return null;
   }
