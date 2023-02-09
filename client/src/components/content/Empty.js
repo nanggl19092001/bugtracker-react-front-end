@@ -1,7 +1,7 @@
 function Empty() {
   return (
     <div
-      className="w-full h-[500px] mt-8
+      className="w-full h-[200px] mt-8
             border-dashed border-2 border-text-color"
     >
       <div className="flex flex-col items-center justify-center h-full">

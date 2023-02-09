@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate} from "react-router-dom";
 import { HomeContext } from "../Context/HomeContext";
 function Navbar() {
-  const { setPage } = useContext(HomeContext);
+  const { setPage} = useContext(HomeContext);
   const navigate = useNavigate();
 
   const handlePage = (page) => {
@@ -12,6 +12,7 @@ function Navbar() {
     localStorage.removeItem("token");
     localStorage.clear();
     navigate("/login");
+    window.location.reload()
   };
 
   return (
@@ -33,7 +34,7 @@ function Navbar() {
           </NavLink>
         </li>
         <NavLink
-          to="#a"
+          to="/dashboard"
           data-mdb-ripple="true"
           data-mdb-ripple-color="dark"
           onClick={() => handlePage("1")}
@@ -63,7 +64,7 @@ function Navbar() {
           </li>
         </NavLink>
         <NavLink
-          to="#b"
+          to="/ticket"
           data-mdb-ripple="true"
           data-mdb-ripple-color="dark"
           onClick={() => handlePage("2")}
