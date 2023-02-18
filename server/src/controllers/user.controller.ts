@@ -1,6 +1,11 @@
+import { Socket } from "socket.io"
+
+const uploadFile = require('../middleware/uploadFile')
 const projectMod = require('../models/project.model')
 const projectMembersMod = require('../models/projectmember.model')
 const accountMod = require('../models/account.model')
+const valCre = require('../middleware/validateCreator')
+const commentMod = require('../models/comment.model')
 
 interface UserControllerInterface {
     getUserProjects(req: any, res: any): Promise<void>
@@ -11,6 +16,11 @@ interface UserControllerInterface {
     deleteProject(req: any, res: any): Promise<void>
     alterProject(req: any, res: any): Promise<void>
     createProjectComment(req: any, res: any): Promise<void>
+
+    createTicket(req: any, res: any): Promise<void>
+    alterTicket(req: any, res: any): Promise<void>
+    deleteTicket(req: any, res: any): Promise<void>
+    createTicketComment(req: any, res: any): Promise<void>
 }
 
 class UserController implements UserControllerInterface{
@@ -81,6 +91,17 @@ class UserController implements UserControllerInterface{
         const projectId = req.body.project;
 
         try {
+            const existMember = await projectMembersMod.find(
+                {
+                    userId: newMemberId,
+                    projectId: projectId
+                }
+            )
+
+            if(existMember.length > 0){
+                return res.send(JSON.stringify({status: 406, message: "Member already added into project"}))
+            }
+
             await projectMembersMod.create({
                 userId: newMemberId,
                 projectId: projectId
@@ -114,7 +135,7 @@ class UserController implements UserControllerInterface{
             ]
         },{
               password: 0  
-        }, (result: any, error: any) => {
+        }, (error: any, result: any) => {
             if(error){
                 return res.send(JSON.stringify({status: 500, message: error}))
             }
@@ -130,30 +151,162 @@ class UserController implements UserControllerInterface{
         if(!user || !project){
             return res.send(JSON.stringify({status: 400, message: "Missing information"}))
         }
-
-        projectMembersMod.delete({
-            userId: user,
-            projectId: project
-        }, (result: any, error: any) => {
-            if(error){
-                return res.send(JSON.stringify({status: 500, message: error}))
+        try{
+            if(!valCre(req.user.id, project)){
+                return res.send(JSON.stringify({status: 401, message: "Only creator can add member to this project"}))
             }
-
-            return res.send(JSON.stringify({status: 200, message: result}))
-        })
+    
+            projectMembersMod.deleteOne({
+                userId: user,
+                projectId: project
+            }, (error: any, result: any) => {
+                if(error){
+                    return res.send(JSON.stringify({status: 500, message: error}))
+                }
+    
+                return res.send(JSON.stringify({status: 200, message: result}))
+            })
+        } catch (e) {
+            return res.send(JSON.stringify({status: 500, message: e}))
+        }
+        
     }
 
     async deleteProject(req: any, res: any): Promise<void> {
+        const project = req.body.id
+
+        if(!project) {
+            return res.send(JSON.stringify({status: 400, message: "Missing information"}))
+        }
+
+        try {
+            if(!valCre(req.user.id, project)){
+                return res.send(JSON.stringify({status: 401, message: "Only creator can add member to this project"}))
+            }
+
+            projectMod.deleteOne({
+                _id: project
+            }, (error: any, result: any) => {
+                if(error){
+                    return res.send(JSON.stringify({status: 500, message: error}))
+                }
+                else{
+                    projectMembersMod.deleteMany({
+                        projectId: project
+                    }, (error: any, result: any) => {
+                        if(error){
+                            return res.send(JSON.stringify({status: 500, message: error}))
+                        }
+            
+                        return res.send(JSON.stringify({status: 200, message: result}))
+                    })
+                }
+            })
+        } catch (error) {
+            return res.send(JSON.stringify({status: 500, message: error}))
+        }
+
         
     }
 
     async alterProject(req: any, res: any): Promise<void> {
-        
+
+        const project: string = req.body.projectId;
+        const name: string = req.body.name
+        const description: string = req.body.description || " ";
+        const end: Date = req.body.end;
+
+        if(!project || !end ||!name){
+            return res.send(JSON.stringify({status: 400, message: "Missing important infomation"}))
+        }
+
+        let today = new Date()
+        let endDate = new Date(end)
+        if(today > endDate){
+            return res.send(JSON.stringify({status: 400, message: "Invalid deadline"}))
+        }
+
+        try {
+
+            if(!valCre(req.user.id, project)){
+                return res.send(JSON.stringify({status: 401, message: "Only creator can make change to this project"}))
+            }
+
+            projectMod.updateOne(
+                {
+                    _id: project
+                },
+                {
+                    name: name,
+                    description: description,
+                    end: end
+                },
+                (err: any, result: any) => {
+                    if(err){
+                        return res.send(JSON.stringify({status: 500, message: err}))
+                    }
+                    else{
+                        return res.send(JSON.stringify({status: 200, message: "project updated"}))
+                    }
+                }
+            )
+
+        } catch (error) {
+            return res.send(JSON.stringify({status: 500, message: error}))
+        }
     }
 
     async createProjectComment(req: any, res: any): Promise<void> {
+        const io: Socket = req.app.get('socketio')
         
+        const sender = req.user.id;
+        const content = req.body.content;
+        const type = req.body.type;
+        const receiveId = req.body.receiveId;
+
+        if(!sender || !content || !type || !receiveId){
+            return res.send(JSON.stringify({status: 401, message: "Missing infomation"}))
+        }
+
+        try {
+            commentMod.create({
+                sender: sender,
+                content: content,
+                type: type,
+                receiveId: receiveId
+            }, (err: any, result: any) => {
+                if(err) {
+                    return res.send(JSON.stringify({
+                        status: 500, message: err
+                    }))
+                }
+                
+                io.to(receiveId).emit("message", result)
+                return res.send(JSON.stringify({status: 200, message: result}))
+            })
+        } catch (error) {
+            return res.send(JSON.stringify({
+                status: 500, message: error
+            }))
+        }
     }
+
+    async createTicket(req: any, res: any){
+
+    }
+
+    async alterTicket(req: any, res: any){
+
+    }
+
+    async deleteTicket(req: any, res: any){
+
+    }
+
+    async createTicketComment(req: any, res: any){
+
+    }
+
 }
 
 module.exports = new UserController
