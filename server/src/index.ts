@@ -33,7 +33,7 @@ app.use('/public', express.static(path.join(__dirname, '../public')))
 
 io.on("connection", (socket: Socket) => {
     socket.on('join-room', (id)=>{
-        // console.log(id)
+        console.log(id)
         socket.join(id)
     })
 })
