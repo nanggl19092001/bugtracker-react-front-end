@@ -285,7 +285,7 @@ class UserController implements UserControllerInterface{
         const type = req.body.type;
         const receiveId = req.body.receiveId;
 
-        if(!sender || !content || !type || !receiveId){
+        if(!sender || !content || !receiveId){
             return res.send(JSON.stringify({status: 401, message: "Missing infomation"}))
         }
 

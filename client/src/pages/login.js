@@ -34,8 +34,6 @@ function Login({ setIsLogin }) {
       let resJson = await res.json();
       if (resJson.status === 200) {
         localStorage.setItem("token", resJson.access_token);
-        console.log("Login Successfully");
-        console.log(resJson.access_token);
         setIsLogin(true);
         setNotify("");
         navigate("/");
@@ -53,8 +51,6 @@ function Login({ setIsLogin }) {
       let resJson = await res.json();
       if (resJson.status === 200) {
         localStorage.setItem("token", resJson.access_token);
-        console.log("Login Successfully");
-        console.log(resJson.access_token);
         setIsLogin(true);
         setNotify("");
         navigate("/");

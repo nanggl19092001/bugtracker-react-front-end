@@ -1,8 +1,11 @@
-import Sort from "../icon/Sort";
+import Sort from "../button/Sort";
 import { Link } from "react-router-dom";
 import Empty from "./Empty";
 import { useState, useContext, useRef } from "react";
 import { HomeContext } from "../../Context/HomeContext";
+import { convertTimeToUTC } from "../../utils/ConvertTime";
+import Option from "../button/Option";
+import ModalDelete from "../notify/ModalDelete";
 
 function Project({ project }) {
   const { token, SERVER_DOMAIN, reload, setReload } = useContext(HomeContext);
@@ -41,15 +44,10 @@ function Project({ project }) {
   }
   const [offset, setOffset] = useState(0);
   project = project.slice(offset, offset + limit);
-  //show delete button
+  //show option button
   const [isOpen, setIsOpen] = useState(false);
-  const [id, setId] = useState("");
-  let idIsOpen = id;
-  const handleShowDelete = (id) => {
-    setId(id);
-    id === idIsOpen ? setIsOpen(!isOpen) : setIsOpen(true);
-  };
-  //show modal
+  const [idIsOpen, setId] = useState("");
+  //show ModalDelete
   const [showModal, setShowModal] = useState(false);
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -90,20 +88,22 @@ function Project({ project }) {
     console.log(itemEdit._id);
     try {
       let res = await fetch(`${SERVER_DOMAIN}/user/project?token=${token}`, {
-        method:"PUT",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           projectId: itemEdit._id,
-          name: name.current.value.charAt(0).toUpperCase() + name.current.value.slice(1),
+          name:
+            name.current.value.charAt(0).toUpperCase() +
+            name.current.value.slice(1),
           description: description.current.value,
           end: time.current.value,
         }),
       });
       let resJson = await res.json();
       if (resJson.status === 200) {
-        setReload(!reload)
+        setReload(!reload);
         setShowEditModal(false);
       } else {
         setMessage(resJson.message);
@@ -116,12 +116,8 @@ function Project({ project }) {
   const toggleModalEdit = () => {
     setShowEditModal(true);
     setIsOpen(false);
-  }
-  const convertTime = (time) => {
-    const date = new Date(time);
-    const utcDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-    return utcDate.toISOString().slice(0, 16);
-  }
+  };
+
   return (
     <div>
       {project && (
@@ -134,8 +130,10 @@ function Project({ project }) {
                 <div className="fixed z-20 bottom-0 inset-x-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center">
                   <div
                     className="fixed inset-0 transition-opacity"
-                    onClick={() => {setShowEditModal(false)
-                    setMessage("")}}
+                    onClick={() => {
+                      setShowEditModal(false);
+                      setMessage("");
+                    }}
                   >
                     <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
                   </div>
@@ -185,7 +183,7 @@ function Project({ project }) {
                         <input
                           type="datetime-local"
                           id="time"
-                          defaultValue={convertTime(itemEdit.end)}
+                          defaultValue={convertTimeToUTC(itemEdit.end)}
                           ref={time}
                           className="w-full p-2 border border-gray-400 rounded focus:outline-none focus:border-blue-500 focus:border-2"
                         />
@@ -219,7 +217,7 @@ function Project({ project }) {
                   <tr>
                     <th className="w-1/6 text-start">
                       Name
-                      <Sort handleSort={handleSort} />
+                      <Sort handleSort={handleSort}/>
                     </th>
                     <th className="w-3/6 text-start">Description</th>
                     <th className="w-1/6 text-start">Contributor</th>
@@ -243,27 +241,8 @@ function Project({ project }) {
                           {item.creator}
                         </td>
                         <td className="relative">
-                          <button
-                            className="mt-1 ml-8 focus:outline-none"
-                            onClick={() => handleShowDelete(item._id)}
-                          >
-                            <svg
-                              className="w-5 h-5 text-gray-400 hover:text-gray-600"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg"
-                              aria-hidden="true"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
-                              ></path>
-                            </svg>
-                          </button>
-                          {item._id === id && isOpen && (
+                          <Option itemId={item._id} isOpen = {isOpen} setIsOpen = {setIsOpen}  idIsOpen = {idIsOpen} setId = {setId} />
+                          {item._id === idIsOpen && isOpen && (
                             <div
                               className={`absolute z-10 top-2 left-14 w-fit
                               bg-white shadow-2xl rounded border border-gray-200`}
@@ -318,34 +297,7 @@ function Project({ project }) {
                   })}
                 </tbody>
               </table>
-              {showModal && (
-                <div className="fixed z-50 bottom-0 inset-x-0 px-4 pb-6 sm:inset-0 sm:flex sm:items-center sm:justify-center">
-                  <div className="fixed inset-0 transition-opacity">
-                    <div className="absolute inset-0 bg-gray-500 opacity-75" />
-                  </div>
-                  <div className="bg-white rounded-lg px-4 pt-5 pb-4 overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
-                    <div>
-                      <div className="mb-4 text-lg">
-                        Are you sure you want to delete this item?
-                      </div>
-                      <div className="flex justify-end">
-                        <button
-                          className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 mr-2"
-                          onClick={() => setShowModal(false)}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                          onClick={(e) => handleDelete(e)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {showModal && <ModalDelete setShowModal = {setShowModal} handleDelete = {handleDelete}  />}
               <div className="flex justify-center pt-4 z-10">
                 <nav aria-label="Page navigation">
                   <ul className="flex list-style-none">
