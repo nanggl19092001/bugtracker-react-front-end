@@ -10,7 +10,6 @@ function Dashboard() {
     setIsOpen(!isOpen);
     setMessage("");
   };
-  console.log(project);
   const [message, setMessage] = useState("");
   const [notify, setNotify] = useState("");
   const name = useRef("");

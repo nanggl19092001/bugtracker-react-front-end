@@ -2,9 +2,10 @@ import { HomeContext } from "../../Context/HomeContext";
 import GetUser from "../../FetchData/GetUser";
 import React, { useContext, useState } from "react";
 import { useParams } from "react-router-dom";
+
 function Member(props) {
   const { id } = useParams();
-  const { SERVER_DOMAIN, token } = useContext(HomeContext);
+  const { SERVER_DOMAIN, token, user } = useContext(HomeContext);
   const [keyword, setKeyword] = useState("");
   const [reload, setReload] = useState(false);
   const { data: users, error } = GetUser(
@@ -58,6 +59,7 @@ function Member(props) {
     }
     setReload(!reload);
   };
+
   const handleDelMember = async (idUser) => {
     try {
       let res = await fetch(
@@ -95,6 +97,10 @@ function Member(props) {
             member.map((item) => (
               <div
                 key={item._id}
+                data-te-toggle="tooltip"
+                data-te-placement="top"
+                data-te-ripple-color="light"
+                title={item.email}
                 data-te-chip-init
                 data-te-ripple-init
                 className="w-full [word-wrap: break-word] my-[5px] mr-4 flex h-[42px] cursor-pointer items-center justify-between rounded-[21px] 
@@ -110,25 +116,28 @@ function Member(props) {
                 <span
                   data-te-chip-close
                   className="float-right w-4 cursor-pointer pl-[8px] text-[16px] text-[#afafaf] opacity-[.53] 
-             transition-all duration-200 ease-in-out hover:text-[#8b8b8b] dark:text-black dark:hover:text-neutral-100"
+                      transition-all duration-200 ease-in-out hover:text-[#8b8b8b] dark:text-black dark:hover:text-neutral-100"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="h-3 w-3 hover:bg-red-500"
-                    onClick={() => {
-                      handleDelMember(item._id);
-                    }}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                  {props.thisProject[0] &&
+                    props.thisProject[0].creator._id === user.id && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="h-3 w-3 hover:bg-red-500"
+                        onClick={() => {
+                          handleDelMember(item._id);
+                        }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    )}
                 </span>
               </div>
             ))}
