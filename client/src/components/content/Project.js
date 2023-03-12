@@ -15,10 +15,10 @@ function Project({ project }) {
   };
   if (sort === "desc") {
     project.sort((a, b) => {
-      if (a.name < b.name) {
+      if (a.project.name < b.project.name) {
         return 1;
       }
-      if (a.name > b.name) {
+      if (a.project.name > b.project.name) {
         return -1;
       }
       return 0;
@@ -26,10 +26,10 @@ function Project({ project }) {
   }
   if (sort === "asc") {
     project.sort((a, b) => {
-      if (a.name < b.name) {
+      if (a.project.name < b.project.name) {
         return -1;
       }
-      if (a.name > b.name) {
+      if (a.project.name > b.project.name) {
         return 1;
       }
       return 0;
@@ -85,7 +85,6 @@ function Project({ project }) {
   const time = useRef("");
   const handleEdit = async (e) => {
     e.preventDefault();
-    console.log(itemEdit._id);
     try {
       let res = await fetch(`${SERVER_DOMAIN}/user/project?token=${token}`, {
         method: "PUT",
@@ -93,7 +92,7 @@ function Project({ project }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          projectId: itemEdit._id,
+          projectId: itemEdit.project._id,
           name:
             name.current.value.charAt(0).toUpperCase() +
             name.current.value.slice(1),
@@ -112,7 +111,7 @@ function Project({ project }) {
       console.log(err);
     }
   };
-  let itemEdit = project.find((item) => item._id === idIsOpen);
+  let itemEdit = project.find((item) => item.project._id === idIsOpen);
   const toggleModalEdit = () => {
     setShowEditModal(true);
     setIsOpen(false);
@@ -152,7 +151,7 @@ function Project({ project }) {
                         <input
                           type="text"
                           id="name"
-                          defaultValue={itemEdit.name}
+                          defaultValue={itemEdit.project.name}
                           ref={name}
                           className="w-full p-2 border border-gray-400 rounded focus:outline-none focus:border-blue-500 focus:border-2"
                         />
@@ -167,7 +166,7 @@ function Project({ project }) {
                         <textarea
                           type="text"
                           id="description"
-                          defaultValue={itemEdit.description}
+                          defaultValue={itemEdit.project.description}
                           ref={description}
                           rows="5"
                           className="w-full p-2 border border-gray-400 rounded focus:outline-none focus:border-blue-500 focus:border-2"
@@ -183,7 +182,7 @@ function Project({ project }) {
                         <input
                           type="datetime-local"
                           id="time"
-                          defaultValue={convertTimeToUTC(itemEdit.end)}
+                          defaultValue={convertTimeToUTC(itemEdit.project.end)}
                           ref={time}
                           className="w-full p-2 border border-gray-400 rounded focus:outline-none focus:border-blue-500 focus:border-2"
                         />
@@ -212,7 +211,7 @@ function Project({ project }) {
                   </div>
                 </div>
               )}
-              <table className="table-fixed w-full min-h-[250px] mx-4 py-2 font-light border-b border-gray-200">
+              <table className="table-fixed w-full min-h-[250px] py-2 font-light border-b border-gray-200">
                 <thead>
                   <tr>
                     <th className="w-1/6 text-start">
@@ -229,20 +228,20 @@ function Project({ project }) {
                     return (
                       <tr
                         className="border-t border-gray-200 h-11"
-                        key={item._id}
+                        key={item.project._id}
                       >
                         <td className="whitespace-nowrap overflow-hidden text-ellipsis font-normal">
-                          <Link to={`/project/${item._id}`}>{item.name}</Link>
+                          <Link to={`/project/${item.project._id}`}>{item.project.name}</Link>
                         </td>
                         <td className="whitespace-nowrap overflow-hidden text-ellipsis ">
-                          {item.description}
+                          {item.project.description}
                         </td>
                         <td className="whitespace-nowrap overflow-hidden text-ellipsis">
-                          {item.creator}
+                          {item.creator.firstname}
                         </td>
                         <td className="relative">
-                          <Option itemId={item._id} isOpen = {isOpen} setIsOpen = {setIsOpen}  idIsOpen = {idIsOpen} setId = {setId} />
-                          {item._id === idIsOpen && isOpen && (
+                          <Option itemId={item.project._id} isOpen = {isOpen} setIsOpen = {setIsOpen}  idIsOpen = {idIsOpen} setId = {setId} />
+                          {item.project._id === idIsOpen && isOpen && (
                             <div
                               className={`absolute z-10 top-2 left-14 w-fit
                               bg-white shadow-2xl rounded border border-gray-200`}

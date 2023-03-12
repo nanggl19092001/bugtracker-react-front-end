@@ -10,6 +10,7 @@ function Dashboard() {
     setIsOpen(!isOpen);
     setMessage("");
   };
+  console.log(project);
   const [message, setMessage] = useState("");
   const [notify, setNotify] = useState("");
   const name = useRef("");
@@ -46,8 +47,8 @@ function Dashboard() {
     <div className="px-8 py-8">
       {notify && <Notification message={notify} type="success" />}
       <h2 className="text-xl font-bold">DashBoard</h2>
-      <div className="my-4 w-full h-fit min-h-[250px] bg-white rounded">
-        <h2 className="text-lg px-4 pt-2 text-text-color font-bold">Project</h2>
+      <div className="my-4 px-4 py-2 w-full h-fit min-h-[250px] bg-white rounded">
+        <h2 className="text-lg text-text-color font-bold">Project</h2>
         <div className="flex justify-end">
           <button
             className="bg-blue-600 text-white opacity-80 text-[14px] rounded-md 

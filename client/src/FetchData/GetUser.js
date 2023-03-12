@@ -1,7 +1,7 @@
 import { useState, useEffect} from "react";
 
 
-const GetUser = (url) => {
+const GetUser = (url, reload) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
@@ -26,7 +26,7 @@ const GetUser = (url) => {
         }
       });
     return () => abortCont.abort();
-  }, [url]);
+  }, [url, reload]);
 
   return { data, error };
 };

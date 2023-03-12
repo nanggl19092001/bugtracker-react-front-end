@@ -1,11 +1,18 @@
 import { HomeContext } from "../../Context/HomeContext";
 import GetUser from "../../FetchData/GetUser";
 import React, { useContext, useState } from "react";
+import { useParams } from "react-router-dom";
 function Member(props) {
+  const { id } = useParams();
   const { SERVER_DOMAIN, token } = useContext(HomeContext);
   const [keyword, setKeyword] = useState("");
+  const [reload, setReload] = useState(false);
   const { data: users, error } = GetUser(
     `${SERVER_DOMAIN}/user/search?token=${token}&key=${keyword}`
+  );
+  const { data: member } = GetUser(
+    `${SERVER_DOMAIN}/user/project/member?token=${token}&id=${id}`,
+    reload
   );
   const handleShowMember = (e) => {
     setKeyword(e.target.value);
@@ -15,7 +22,7 @@ function Member(props) {
   users &&
     (userShow = users.filter(
       (user) =>
-        user._id !== props.thisProject[0].creator &&
+        member.find((person) => person._id === user._id) === undefined &&
         listChosenUser.find((person) => person._id === user._id) === undefined
     ));
   const handleChooseMember = (user) => {
@@ -33,13 +40,12 @@ function Member(props) {
             },
             body: JSON.stringify({
               user: listChosenUser[i]._id,
-              project: props.thisProject[0]._id,
+              project: props.thisProject[0].project._id,
             }),
           }
         );
         let resJson = await res.json();
         if (resJson.status === 200) {
-          console.log(resJson);
           setListChosenUser(
             listChosenUser.filter((list) => list.id !== listChosenUser[i].id)
           );
@@ -50,54 +56,84 @@ function Member(props) {
         console.log(err);
       }
     }
+    setReload(!reload);
+  };
+  const handleDelMember = async (idUser) => {
+    try {
+      let res = await fetch(
+        `${SERVER_DOMAIN}/user/project/member?token=${token}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: idUser,
+            project_id: id,
+          }),
+        }
+      );
+      let resJson = await res.json();
+      if (resJson.status === 200) {
+        setReload(!reload);
+      } else {
+        console.log(resJson);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <div className="shadow-md">
       <div className="mx-4 my-2">
         <h2 className="text-lg text-text-color font-bold">Member</h2>
         <div
-          className="list-member grid grid-cols-1 drop-shadow-md
+          className="list-member grid grid-cols-1 gap-1 drop-shadow-md
         min-[1000px]:grid-cols-2 min-[1500px]:grid-cols-3"
         >
-          <div
-            data-te-chip-init
-            data-te-ripple-init
-            className="[word-wrap: break-word] my-[5px] mr-4 flex h-[42px] cursor-pointer items-center justify-between rounded-[21px] 
-            bg-[#eceff1] py-0 px-[12px] text-[13px] font-normal normal-case leading-loose text-[#181bce] shadow-none 
-            transition-[opacity] duration-300 ease-linear hover:!shadow-none active:bg-[#cacfd1] dark:bg-slate-200 dark:text-blue-500 dark:font-bold"
-          >
-            <img
-              className="my-0 mr-[8px] -ml-[12px] h-[inherit] w-[inherit] rounded-[100%]"
-              src="https://tecdn.b-cdn.net/img/Photos/Avatars/avatar-6.webp"
-              alt="Contact Person"
-            />
-            Hallo
-            <span
-              data-te-chip-close
-              className="float-right w-4 cursor-pointer pl-[8px] text-[16px] text-[#afafaf] opacity-[.53] 
-              transition-all duration-200 ease-in-out hover:text-[#8b8b8b] dark:text-black dark:hover:text-neutral-100"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="h-3 w-3 hover:bg-red-500"
-                onClick={() => {
-                  alert("clicked");
-                }}
+          {member &&
+            member.map((item) => (
+              <div
+                key={item._id}
+                data-te-chip-init
+                data-te-ripple-init
+                className="w-full [word-wrap: break-word] my-[5px] mr-4 flex h-[42px] cursor-pointer items-center justify-between rounded-[21px] 
+           bg-[#eceff1] py-0 px-[12px] text-[13px] font-normal normal-case leading-loose text-[#181bce] shadow-none 
+           transition-[opacity] duration-300 ease-linear hover:!shadow-none active:bg-[#cacfd1] dark:bg-slate-200 dark:text-blue-500 dark:font-bold"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
+                <img
+                  className="my-0 mr-[8px] -ml-[12px] h-[40px] w-[40px] rounded-[100%]"
+                  src="https://tecdn.b-cdn.net/img/Photos/Avatars/avatar-6.webp"
+                  alt="Contact Person"
                 />
-              </svg>
-            </span>
-          </div>
+                {item.firstname}
+                <span
+                  data-te-chip-close
+                  className="float-right w-4 cursor-pointer pl-[8px] text-[16px] text-[#afafaf] opacity-[.53] 
+             transition-all duration-200 ease-in-out hover:text-[#8b8b8b] dark:text-black dark:hover:text-neutral-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="h-3 w-3 hover:bg-red-500"
+                    onClick={() => {
+                      handleDelMember(item._id);
+                    }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </span>
+              </div>
+            ))}
         </div>
-        <div className="relative add-member mt-2 w-full md:w-3/4">
+        <div className="relative add-member mt-2 w-full xl:w-3/4">
           <input
             className="p-2 w-full border border-gray-200 rounded 
             focus:outline-none focus:border-blue-500 focus:border-2"
@@ -153,57 +189,57 @@ function Member(props) {
           )}
         </div>
         {listChosenUser && (
-            <div className="flex w-full flex-wrap justify-start">
-              {listChosenUser.map((user) => (
-                <div
-                  key={user._id}
-                  data-te-chip-init
-                  data-te-ripple-init
-                  className="[word-wrap: break-word] my-[5px] mr-4 flex h-[42px] cursor-pointer items-center justify-between rounded-[21px] 
+          <div className="flex w-full flex-wrap justify-start">
+            {listChosenUser.map((user) => (
+              <div
+                key={user._id}
+                data-te-chip-init
+                data-te-ripple-init
+                className="[word-wrap: break-word] my-[5px] mr-4 flex h-[42px] cursor-pointer items-center justify-between rounded-[21px] 
             bg-[#eceff1] py-0 px-[12px] text-[13px] font-normal normal-case leading-loose text-[#4f4f4f] shadow-none 
             transition-[opacity] duration-300 ease-linear hover:!shadow-none active:bg-[#cacfd1] dark:bg-blue-500 dark:text-neutral-200"
-                  onClick={() =>
-                    setListChosenUser(
-                      listChosenUser.filter((person) => person._id !== user._id)
-                    )
-                  }
-                >
-                  <img
-                    className="my-0 mr-[8px] -ml-[12px] h-[inherit] w-[inherit] rounded-[100%]"
-                    src="https://tecdn.b-cdn.net/img/Photos/Avatars/avatar-6.webp"
-                    alt="Contact Person"
-                  />
-                  {user.firstname}
-                  <span
-                    data-te-chip-close
-                    className="float-right w-4 cursor-pointer pl-[8px] text-[16px] text-[#afafaf] opacity-[.53] 
+                onClick={() =>
+                  setListChosenUser(
+                    listChosenUser.filter((person) => person._id !== user._id)
+                  )
+                }
+              >
+                <img
+                  className="my-0 mr-[8px] -ml-[12px] h-[inherit] w-[inherit] rounded-[100%]"
+                  src="https://tecdn.b-cdn.net/img/Photos/Avatars/avatar-6.webp"
+                  alt="Contact Person"
+                />
+                {user.firstname}
+                <span
+                  data-te-chip-close
+                  className="float-right w-4 cursor-pointer pl-[8px] text-[16px] text-[#afafaf] opacity-[.53] 
               transition-all duration-200 ease-in-out hover:text-[#8b8b8b] dark:text-white dark:hover:text-neutral-100"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="h-3 w-3"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      className="h-3 w-3"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-          <button
-            className="block bg-blue-500 text-white rounded-md p-2 my-1"
-            onClick={() => handleAddMember(listChosenUser)}
-          >
-            Add
-          </button>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+        <button
+          className="block bg-blue-500 text-white rounded-md p-2 my-1"
+          onClick={() => handleAddMember(listChosenUser)}
+        >
+          Add
+        </button>
       </div>
     </div>
   );
