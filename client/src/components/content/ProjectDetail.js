@@ -1,53 +1,28 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { HomeContext } from "../../Context/HomeContext";
 import { useNavigate } from "react-router-dom";
-import { convertTimeToDMY, countTimeAgo } from "../../utils/ConvertTime";
+
 import Member from "./Member";
 import ProjectTicket from "./ProjectTicket";
+import InfoProject from "./InfoProject";
+import CommentProject from "./CommentProject";
+import { io } from "socket.io-client";
 
 function ProjectDetail({ id }) {
-  // const socket = io('http://localhost:5000');
-  // useEffect(() => {
-  //   socket.emit('join-room', id);
-  //   socket.on('message', (data) => {
-  //     console.log(data);
-  //   })
-  //   return () => {
-  //     socket.removeAllListeners();
-  //   }
-  // },[id, socket])
-  const [comment, setComment] = useState("");
-  const { project, SERVER_DOMAIN, token, socket } = useContext(HomeContext);
+  const socket = io("http://localhost:5000");
+  const { project } = useContext(HomeContext);
   const history = useNavigate();
-  useEffect(() => {
-    socket.emit("join-room", id);
-    socket.on("message", (data) => {
-      console.log(data);
-    });
-    return () => {
-      socket.removeAllListeners();
-    };
-  }, [id, socket]);
-
   let thisProject = [];
-  project && (thisProject = project.filter((project) => project.project._id === id));
-  console.log(thisProject);
+  project &&
+    (thisProject = project.filter((project) => project.project._id === id));
   return (
     <div className="px-8 py-8">
       {thisProject &&
         thisProject.map((project) => (
           <div className="mb-4" key={project.project._id}>
-            <h2 className="text-xl font-bold">{project.project.name}</h2>
-            <p className="text-sm text-red-500">
-              {convertTimeToDMY(project.project.end) +
-                " - " +
-                countTimeAgo(project.project.end)}
-            </p>
-            <q className="text-sm text-gray-500 italic">
-              {project.project.description}
-            </q>
+            <h2 className="inline text-xl font-bold">{project.project.name}</h2>
             <button
-              className="btn btn-secondary block float-right w-20 hover:text-white"
+              className="inline float-right w-20 hover:text-white"
               onClick={() => history("/")}
             >
               <svg
@@ -74,53 +49,13 @@ function ProjectDetail({ id }) {
           <Member thisProject={thisProject} />
           <ProjectTicket thisProject={thisProject} />
         </div>
-        <div className="flex items-center">
-          <textarea
-            className="w-1/3 p-2 border border-gray-200 rounded focus:outline-none focus:border-blue-500 focus:border-2 resize-none"
-            type="text"
-            placeholder="Input comment"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            onKeyDown={(e) => {
-              e.key === "Enter" &&
-                fetch(`${SERVER_DOMAIN}/user/project/comment?token=${token}`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    content: comment,
-                    type: 0,
-                    receiveId: id,
-                  }),
-                })
-                  .then((res) => res.json())
-                  .then((data) => {
-                    console.log(data);
-                    setComment("");
-                  });
-            }}
+        <div className="grid grid-cols-3 gap-4 2xl:grid-cols-2">
+          <InfoProject thisProject={thisProject} />
+          <CommentProject
+            thisProject={thisProject}
+            socket={socket}
+            idProject={id}
           />
-          <button
-            className="bg-blue-500 text-white rounded-md p-2 ml-2 hover:opacity-90 hover:shadow-md transition-opacity duration-300 ease-in-out"
-            onClick={() => {
-              fetch(`${SERVER_DOMAIN}/user/project/comment?token=${token}`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  content: comment,
-                  type: 0,
-                  receiveId: id,
-                }),
-              })
-                .then((res) => res.json())
-                .then((data) => console.log(data));
-            }}
-          >
-            Comment
-          </button>
         </div>
       </div>
     </div>

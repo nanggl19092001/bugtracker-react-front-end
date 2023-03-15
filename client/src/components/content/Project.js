@@ -8,7 +8,7 @@ import Option from "../button/Option";
 import ModalDelete from "../notify/ModalDelete";
 
 function Project({ project }) {
-  const { token, SERVER_DOMAIN, reload, setReload } = useContext(HomeContext);
+  const { token, SERVER_DOMAIN, reload, setReload , user} = useContext(HomeContext);
   const [sort, setSort] = useState("");
   const handleSort = (value) => {
     setSort(value);
@@ -241,7 +241,7 @@ function Project({ project }) {
                         </td>
                         <td className="relative">
                           <Option itemId={item.project._id} isOpen = {isOpen} setIsOpen = {setIsOpen}  idIsOpen = {idIsOpen} setId = {setId} />
-                          {item.project._id === idIsOpen && isOpen && (
+                          {(item.project._id === idIsOpen && isOpen && item.project.creator === user.id) && (
                             <div
                               className={`absolute z-10 top-2 left-14 w-fit
                               bg-white shadow-2xl rounded border border-gray-200`}

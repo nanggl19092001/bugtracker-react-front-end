@@ -3,6 +3,7 @@ import React, { useContext, useRef, useState } from "react";
 import Project from "./Project";
 import { HomeContext } from "../../Context/HomeContext";
 import Notification from "../notify/Notification";
+import IsLoading from "../notify/IsLoading";
 function Dashboard() {
   const { project, error, isLoading, SERVER_DOMAIN, token, reload, setReload} = useContext(HomeContext);
   const [isOpen, setIsOpen] = useState(false);
@@ -136,9 +137,7 @@ function Dashboard() {
           </div>
         )}
         {isLoading ? (
-          <div className="flex items-center justify-center h-20">
-            <div className="w-10 h-10 border-4 border-t-5 border-t-blue-500 border-white rounded-full animate-spin"></div>
-          </div>
+          <IsLoading/>
         ) : (
           project && <Project project={project}/>
         )}
