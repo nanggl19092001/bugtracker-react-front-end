@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 function GetComment(url, reload) {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [total, setTotal] = useState(0); 
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -16,6 +17,7 @@ function GetComment(url, reload) {
       })
       .then((data) => {
         setData(data.data);
+        setTotal(data.count);
         setIsLoading(false);
         setError(null);
       })
@@ -29,7 +31,7 @@ function GetComment(url, reload) {
     return () => abortCont.abort();
   }, [url, reload]);
 
-  return { data, isLoading, error };
+  return { data, isLoading, total, error };
 }
 
 export default GetComment;

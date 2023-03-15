@@ -9,13 +9,13 @@ import GetUser from "../../FetchData/GetUser";
 function CommentProject(props) {
   const { SERVER_DOMAIN, token, user } = useContext(HomeContext);
   const [limit, setLimit] = useState(5);
-  const { data, isLoading } = GetComment(
+  const { data, isLoading, total} = GetComment(
     `${SERVER_DOMAIN}/user/comment?token=${token}&id=${props.idProject}&limit=${limit}`
-  );
-  const { data: member } = GetUser(
-    `${SERVER_DOMAIN}/user/project/member?token=${token}&id=${props.idProject}`
-  );
-  const [isGreaterLimit, setIsGreaterLimit] = useState(true);
+    );
+    const { data: member } = GetUser(
+      `${SERVER_DOMAIN}/user/project/member?token=${token}&id=${props.idProject}`
+      );
+  const [isGreaterLimit, setIsGreaterLimit] = useState(total < limit ? true : false);
   const [commentSocket, setCommentSocket] = useState([]);
   const messagesEndRef = useRef(null);
   const frameCommentRef = useRef(null);
@@ -49,13 +49,11 @@ function CommentProject(props) {
     const onScroll = () => {
       const elementPos = messagesEndRef.current.getBoundingClientRect().bottom;
       const frameBot = frameComment.getBoundingClientRect().bottom;
-      console.log(elementPos, frameBot);
       if (elementPos > frameBot + 100) {
         setIsVisible(true);
       } else {
         setIsVisible(false);
       }
-      console.log(isVisible);
     };
     frameComment.addEventListener("scroll", onScroll);
     return () => {
@@ -105,11 +103,13 @@ function CommentProject(props) {
               isGreaterLimit={isGreaterLimit}
               setIsGreaterLimit={setIsGreaterLimit}
               commentSocket={commentSocket}
+              setCommentSocket = {setCommentSocket}
               messagesEndRef={messagesEndRef}
               isVisible = {isVisible}
               setIsVisible = {setIsVisible}
               haveNewComment = {haveNewComment}
               setHaveNewComment = {setHaveNewComment}
+              total = {total}
             />
           )}
           {(!data || data.length === 0) && !isLoading && <NoComment />}
@@ -134,6 +134,7 @@ function CommentProject(props) {
             Comment
           </button>
         </div>
+        <p className="text-xs text-slate-300">Press Enter to send comment</p>
       </div>
     </div>
   );

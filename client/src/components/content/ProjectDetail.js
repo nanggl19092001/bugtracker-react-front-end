@@ -7,9 +7,10 @@ import ProjectTicket from "./ProjectTicket";
 import InfoProject from "./InfoProject";
 import CommentProject from "./CommentProject";
 import { io } from "socket.io-client";
+import { SERVER_DOMAIN } from "../../utils/Constaint";
 
 function ProjectDetail({ id }) {
-  const socket = io("http://localhost:5000");
+  const socket = io(SERVER_DOMAIN);
   const { project } = useContext(HomeContext);
   const history = useNavigate();
   let thisProject = [];
