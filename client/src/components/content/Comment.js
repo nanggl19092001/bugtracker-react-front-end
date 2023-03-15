@@ -47,6 +47,7 @@ function Comment(props) {
             Read more (+10)
           </button>
           <button
+            className={`${props.total <= 10 && `hidden`}`}
             onClick={() => {
               props.setLimit(props.total + props.commentSocket.length);
               props.setIsGreaterLimit(false);
