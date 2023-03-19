@@ -1,24 +1,34 @@
-import {Route, Routes, BrowserRouter} from "react-router-dom"
+import {Route, Routes, BrowserRouter} from "react-router-dom";
+import {useEffect, useState} from "react";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
-import Logout from "./pages/Logout";
-import { AppProvider } from "./Context/AppContext";
+import {AppProvider } from "./Context/AppContext";
+
 
 function App() {
-    const token = localStorage.getItem('token')
+    const [isLogin, setIsLogin] = useState(false);
+    const token = localStorage.getItem("token");
+    useEffect(() => {
+        token ? setIsLogin(true) : setIsLogin(false);
+    },[token]) 
+
     return(
         <AppProvider>
+            <div className="font-poppins box-border">
             <BrowserRouter>
                 <Routes>
                     <Route path="/register" element={<Register/>}/>
-                    <Route path="/login" element={<Login/>}/>
-                    <Route path="/logout" element={<Logout/>}/>
-                    <Route path="/" element={token ? <Home/> : <Login/>}/>
+                    <Route path="/login" element={<Login setIsLogin={setIsLogin}/>}/>
+                    <Route index path="/" element={isLogin ? <Home pages = {'dashboard'}/>  : <Login setIsLogin={setIsLogin}/>}/>
+                    <Route index path="/dashboard" element={isLogin ? <Home pages = {'dashboard'}/> : <Login setIsLogin={setIsLogin}/>}/>
+                    <Route index path="/ticket" element={!isLogin ? <Login setIsLogin={setIsLogin}/> : <Home pages = {'ticket'}/>}/>
+                    <Route path="/project/:id" element={!isLogin ? <Login setIsLogin={setIsLogin}/> : <Home pages={'project'} />}/>
                     <Route path = "*" element={<NotFound/>}/>
                 </Routes>
             </BrowserRouter>
+            </div>
         </AppProvider>
     )
 }

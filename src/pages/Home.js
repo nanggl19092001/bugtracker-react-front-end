@@ -1,28 +1,20 @@
-import React, { useEffect } from "react";
-import jwt_decode from "jwt-decode";
-import { SERVER_DOMAIN } from '../utils/Constaint'
-function Home() {
-  const token = localStorage.getItem("token");
-  const user = jwt_decode(token)
-  useEffect(() => {
-    function fetchData() {
-      fetch(`${SERVER_DOMAIN}/user/project?token=` + token, {
-        method: "GET",
-      })
-        .then((res) => res.json())
-        .then((data) => console.log(data))
-        .catch((error) => console.error("Error:", error))
-    }
-    fetchData();
-  }, [token]);
+
+import Navbar from "../components/Navbar";
+import Content from "../components/Content";
+import Footer from "../components/Footer";
+import { HomeProvider } from "../Context/HomeContext";
+import { useParams } from "react-router-dom";
+function Home({pages}) {
+  const {id} = useParams()
   return (
-    <div>
-      <h1>Home</h1>
-      <h2>Hello {user.firstname +' '+ user.lastname}</h2>
-      <a href="/logout" className="text-base text-blue-700">
-        Logout
-      </a>
+    <div className="grid grid-cols-5 2xl:grid-cols-8">
+      <HomeProvider>
+        <Navbar />
+        <Content id = {id} pages = {pages}/>
+        <Footer />
+      </HomeProvider>
     </div>
+    
   );
 }
 
