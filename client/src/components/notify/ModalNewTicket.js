@@ -1,6 +1,6 @@
 import { useRef, useContext, useState } from "react";
 import { HomeContext } from "../../Context/HomeContext";
-import GetUser from "../../FetchData/GetUser";
+import { ProjectContext } from "../../Context/ProjectContext";
 
 function ModalNewTicket(props) {
   const title = useRef("");
@@ -11,9 +11,7 @@ function ModalNewTicket(props) {
   const deadline = useRef("");
   
   const { SERVER_DOMAIN, token } = useContext(HomeContext);
-  const { data: member } = GetUser(
-    `${SERVER_DOMAIN}/user/project/member?token=${token}&id=${props.idProject}`
-  );
+  const {member} = useContext(ProjectContext);
   const [message, setMessage] = useState("");
 
   const handleValueSelect = (event) => {

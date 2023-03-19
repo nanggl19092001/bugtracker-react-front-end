@@ -1,19 +1,14 @@
 import { HomeContext } from "../../Context/HomeContext";
+import { ProjectContext } from "../../Context/ProjectContext";
 import GetUser from "../../FetchData/GetUser";
 import React, { useContext, useState } from "react";
-import { useParams } from "react-router-dom";
 
 function Member(props) {
-  const { id } = useParams();
   const { SERVER_DOMAIN, token, user } = useContext(HomeContext);
+  const {projectId, member, reload, setReload} = useContext(ProjectContext);
   const [keyword, setKeyword] = useState("");
-  const [reload, setReload] = useState(false);
   const { data: users, error } = GetUser(
     `${SERVER_DOMAIN}/user/search?token=${token}&key=${keyword}`
-  );
-  const { data: member } = GetUser(
-    `${SERVER_DOMAIN}/user/project/member?token=${token}&id=${id}`,
-    reload
   );
   const handleShowMember = (e) => {
     setKeyword(e.target.value);
@@ -70,7 +65,7 @@ function Member(props) {
           },
           body: JSON.stringify({
             id: idUser,
-            project_id: id,
+            project_id: projectId,
           }),
         }
       );

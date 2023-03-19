@@ -19,7 +19,7 @@ export const HomeProvider = ({ children }) => {
     error,
     isLoading,
   } = GetProject(`${SERVER_DOMAIN}/user/project?token=${token}`, reload);
-  const socket = io('http://localhost:5000');
+  const socket = io(`${SERVER_DOMAIN}`);
   return (
     <HomeContext.Provider value={{ token,SERVER_DOMAIN, page, setPage, user, reload, setReload,
      project, error, isLoading, socket}}>

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { HomeContext } from "../../Context/HomeContext";
 import { useNavigate } from "react-router-dom";
 
@@ -6,16 +6,20 @@ import Member from "./Member";
 import ProjectTicket from "./ProjectTicket";
 import InfoProject from "./InfoProject";
 import CommentProject from "./CommentProject";
-import { io } from "socket.io-client";
-import { SERVER_DOMAIN } from "../../utils/Constaint";
+
+import { ProjectProvider } from "../../Context/ProjectContext";
+import InfoTicket from "./InfoTicket";
+import CommentTicket from "./CommentTicket";
 
 function ProjectDetail({ id }) {
-  const socket = io(SERVER_DOMAIN);
   const { project } = useContext(HomeContext);
   const history = useNavigate();
   let thisProject = [];
   project &&
     (thisProject = project.filter((project) => project.project._id === id));
+  const [ticketChoose, setTicketChoose] = useState("");
+  const [thisTicket, setThisTicket] = useState([]);
+  const [reload, setReload] = useState(false);
   return (
     <div className="px-8 py-8">
       {thisProject &&
@@ -45,20 +49,41 @@ function ProjectDetail({ id }) {
             </button>
           </div>
         ))}
-      <div className="bg-white rounded-md p-4 min-h-[80vh]">
-        <div className="grid grid-cols-3 gap-4">
-          <Member thisProject={thisProject} />
-          <ProjectTicket thisProject={thisProject} />
+      <ProjectProvider>
+        <div className="bg-white rounded-md p-4 min-h-[80vh]">
+          <div className="grid grid-cols-3 gap-4">
+            <Member thisProject={thisProject} />
+            <ProjectTicket
+              thisProject={thisProject}
+              ticketChoose={ticketChoose}
+              setTicketChoose={setTicketChoose}
+              thisTicket={thisTicket}
+              setThisTicket={setThisTicket}
+              reload={reload}
+              setReload={setReload}
+            />
+          </div>
+          <div
+            className={`grid grid-cols-3 gap-4 2xl:grid-cols-2 ${
+              ticketChoose !== "" ? "hidden" : ""
+            }`}
+          >
+            <InfoProject thisProject={thisProject} />
+            <CommentProject thisProject={thisProject} idProject={id} />
+          </div>
+          {ticketChoose && (
+            <div className={`grid grid-cols-3 gap-4 2xl:grid-cols-2`}>
+              <InfoTicket
+                ticket={thisTicket}
+                reload={reload}
+                setReload={setReload}
+                setTicketChoose={setTicketChoose}
+              />
+              <CommentTicket idTicket={ticketChoose} />
+            </div>
+          )}
         </div>
-        <div className="grid grid-cols-3 gap-4 2xl:grid-cols-2">
-          <InfoProject thisProject={thisProject} />
-          <CommentProject
-            thisProject={thisProject}
-            socket={socket}
-            idProject={id}
-          />
-        </div>
-      </div>
+      </ProjectProvider>
     </div>
   );
 }

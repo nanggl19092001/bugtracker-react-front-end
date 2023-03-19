@@ -4,18 +4,37 @@ import { HomeContext } from "../../Context/HomeContext";
 import { useContext, useState } from "react";
 import ModalNewTicket from "../notify/ModalNewTicket";
 import Empty from "./Empty";
+import Pagination from "../button/Pagination";
 
-function ProjectTicket() {
+function ProjectTicket(props) {
   const { id } = useParams();
-  const [reload,setReload] = useState(false);
+
   const { SERVER_DOMAIN, token } = useContext(HomeContext);
-  const { data: ticket } = GetProject(
-    `${SERVER_DOMAIN}/user/ticket/project?token=${token}&id=${id}`,reload
+  const { data: ticket, count } = GetProject(
+    `${SERVER_DOMAIN}/user/ticket/project?token=${token}&id=${id}`,
+    props.reload
   );
-  console.log(ticket);
+  const limit = 5;
+  const [offset, setOffset] = useState(0);
+  const total = count;
+  const totalPage = Math.ceil(total / limit);
+  let page = [];
+  for (let i = 1; i <= totalPage; i++) {
+    page.push(i);
+  }
+  // const getFullName = (idMember) => {
+  //   let thisPerson = member.filter((person) => person._id === idMember);
+  //   return thisPerson[0].firstname + thisPerson[0].lastname;
+  // };
   const [isOpenTicketModal, setIsOpenTicketModal] = useState(false);
   const toggleTicketModal = () => {
     setIsOpenTicketModal(!isOpenTicketModal);
+  };
+  const chooseTicket = (id) => {
+    props.ticketChoose !== id
+      ? props.setTicketChoose(id)
+      : props.setTicketChoose("");
+    props.setThisTicket(ticket.filter((item) => item._id === id));
   };
   return (
     <div className="tickets col-span-2 shadow-md">
@@ -31,11 +50,11 @@ function ProjectTicket() {
           </button>
         </div>
         <ModalNewTicket
-          idProject = {id}
+          idProject={id}
           isOpenTicketModal={isOpenTicketModal}
           toggleModal={toggleTicketModal}
-          reload={reload}
-          setReload={setReload}
+          reload={props.reload}
+          setReload={props.setReload}
         />
         {ticket && ticket.length === 0 && <Empty />}
         {ticket && ticket.length > 0 && (
@@ -44,21 +63,43 @@ function ProjectTicket() {
               <tr>
                 <th className="w-2/12 text-start">Name</th>
                 <th className="w-6/12 text-start">Description</th>
-                <th className="w-3/12 text-start">Contributor</th>
+                <th className="w-3/12 text-start">Assignee</th>
                 <th className="text-start"></th>
               </tr>
             </thead>
             <tbody>
-              
-              {/* <tr className="border-t border-gray-200 h-11 hover:bg-slate-300 cursor-pointer">
-              <td className="whitespace-nowrap overflow-hidden text-ellipsis font-normal">Ticket1</td>
-              <td className="whitespace-nowrap overflow-hidden text-ellipsis ">This is Ticket 1</td>
-              <td className="whitespace-nowrap overflow-hidden text-ellipsis">Halo Ng</td>
-              <td className="relative"></td>
-            </tr> */}
+              {ticket.map((item) => (
+                <tr
+                  className={`border-t border-gray-200 h-11 hover:bg-slate-200 cursor-pointer
+                  ${props.ticketChoose === item._id ? "bg-slate-200" : ""}`}
+                  key={item._id}
+                  onClick={() => {
+                    chooseTicket(item._id);
+                  }}
+                >
+                  <td className="whitespace-nowrap overflow-hidden text-ellipsis font-normal">
+                    {item.summary}
+                  </td>
+                  <td className="whitespace-nowrap overflow-hidden text-ellipsis ">
+                    {item.description}
+                  </td>
+                  <td className="whitespace-nowrap overflow-hidden text-ellipsis">
+                    {item.creator}
+                  </td>
+                  <td className="relative"></td>
+                </tr>
+              ))}
             </tbody>
           </table>
         )}
+        <Pagination
+          page={page}
+          offset={offset}
+          setOffset={setOffset}
+          limit={limit}
+          total={total}
+          totalPage={totalPage}
+        />
       </div>
     </div>
   );

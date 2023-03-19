@@ -7,11 +7,11 @@ import IsLoading from "../notify/IsLoading";
 import { io } from "socket.io-client";
 import { ProjectContext } from "../../Context/ProjectContext";
 
-function CommentProject(props) {
+function CommentTicket({idTicket}) {
   const { SERVER_DOMAIN, token, user } = useContext(HomeContext);
   const [limit, setLimit] = useState(5);
   const { data, isLoading, total } = GetComment(
-    `${SERVER_DOMAIN}/user/comment?token=${token}&id=${props.idProject}&limit=${limit}`
+    `${SERVER_DOMAIN}/user/comment?token=${token}&id=${idTicket}&limit=${limit}`
   );
   const { member } = useContext(ProjectContext);
   const [isGreaterLimit, setIsGreaterLimit] = useState(
@@ -24,7 +24,7 @@ function CommentProject(props) {
   const [haveNewComment, setHaveNewComment] = useState(false);
   useEffect(() => {
     const socket = io(SERVER_DOMAIN);
-    socket.emit("join-room", props.idProject);
+    socket.emit("join-room", idTicket);
     socket.on("message", (data) => {
       let sender = member.filter((person) => person._id === data.sender);
       let newComment = [];
@@ -32,16 +32,14 @@ function CommentProject(props) {
       setCommentSocket([...commentSocket, newComment]);
       setHaveNewComment(true);
       if (data.sender === user.id) {
-        if(messagesEndRef.current){
-          messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-          setHaveNewComment(false);
-        }
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        setHaveNewComment(false);
       }
     });
     return () => {
       socket.removeAllListeners();
     };
-  }, [props.idProject, commentSocket, member, user, SERVER_DOMAIN]);
+  }, [idTicket, commentSocket, member, user, SERVER_DOMAIN]);
   useEffect(() => {
     if (messagesEndRef.current && !isVisible) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -69,16 +67,17 @@ function CommentProject(props) {
     e.preventDefault();
     try {
       let res = await fetch(
-        `${SERVER_DOMAIN}/user/project/comment?token=${token}`,
+        `${SERVER_DOMAIN}/user/ticket/comment?token=${token}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            id: user.id,
             content: comment,
             type: 0,
-            receiveId: props.idProject,
+            receiveId: idTicket,
           }),
         }
       );
@@ -94,7 +93,7 @@ function CommentProject(props) {
     <div className="info shadow-md col-span-2 2xl:col-span-1">
       <div className="mx-4 my-2">
         <h2 className="inline text-lg text-text-color font-bold">
-          Project Comment
+          Ticket Comment
         </h2>
         <div
           ref={frameCommentRef}
@@ -146,4 +145,4 @@ function CommentProject(props) {
   );
 }
 
-export default CommentProject;
+export default CommentTicket;
