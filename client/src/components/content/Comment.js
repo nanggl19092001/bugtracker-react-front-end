@@ -39,15 +39,15 @@ function Comment(props) {
       {props.isGreaterLimit && (
         <div className="flex justify-center gap-4 text-xs text-slate-400">
           <button
-            className={`${props.total - props.limit <= 10 && `hidden`}`}
+            className={`${(props.total - props.limit <= props.limit) && `hidden`}`}
             onClick={() => {
-              props.setLimit(props.limit + 10);
+              props.setLimit(props.limit + props.limit );
             }}
           >
-            Read more (+10)
+            Read more ({`+${props.limit}`})
           </button>
           <button
-            className={`${props.total <= 10 && `hidden`}`}
+            className={`${props.total <= props.limit && `hidden`}`}
             onClick={() => {
               props.setLimit(props.total + props.commentSocket.length);
               props.setIsGreaterLimit(false);

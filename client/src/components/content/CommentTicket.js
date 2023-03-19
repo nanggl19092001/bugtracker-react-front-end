@@ -4,8 +4,8 @@ import GetComment from "../../FetchData/GetComment";
 import Comment from "./Comment";
 import NoComment from "./NoComment";
 import IsLoading from "../notify/IsLoading";
-import { io } from "socket.io-client";
 import { ProjectContext } from "../../Context/ProjectContext";
+// import { io } from "socket.io-client";
 
 function CommentTicket({idTicket}) {
   const { SERVER_DOMAIN, token, user } = useContext(HomeContext);
@@ -15,31 +15,34 @@ function CommentTicket({idTicket}) {
   );
   const { member } = useContext(ProjectContext);
   const [isGreaterLimit, setIsGreaterLimit] = useState(
-    total < limit ? true : false
+    true
   );
   const [commentSocket, setCommentSocket] = useState([]);
   const messagesEndRef = useRef(null);
   const frameCommentRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const [haveNewComment, setHaveNewComment] = useState(false);
+  // useEffect(() => {
+  //   const socket = io(SERVER_DOMAIN);
+  //   socket.emit("join-room", idTicket);
+  //   socket.on("message", (data) => {
+  //     let sender = member.filter((person) => person._id === data.sender);
+  //     let newComment = [];
+  //     newComment.push({ comment: data, senderInfo: sender });
+  //     setCommentSocket([...commentSocket, newComment]);
+  //     setHaveNewComment(true);
+  //     if (data.sender === user.id) {
+  //       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  //       setHaveNewComment(false);
+  //     }
+  //   });
+  //   return () => {
+  //     socket.removeAllListeners();
+  //   };
+  // }, [idTicket, commentSocket, member, user, SERVER_DOMAIN]);
   useEffect(() => {
-    const socket = io(SERVER_DOMAIN);
-    socket.emit("join-room", idTicket);
-    socket.on("message", (data) => {
-      let sender = member.filter((person) => person._id === data.sender);
-      let newComment = [];
-      newComment.push({ comment: data, senderInfo: sender });
-      setCommentSocket([...commentSocket, newComment]);
-      setHaveNewComment(true);
-      if (data.sender === user.id) {
-        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-        setHaveNewComment(false);
-      }
-    });
-    return () => {
-      socket.removeAllListeners();
-    };
-  }, [idTicket, commentSocket, member, user, SERVER_DOMAIN]);
+    setCommentSocket([]);
+  },[idTicket])
   useEffect(() => {
     if (messagesEndRef.current && !isVisible) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -84,6 +87,14 @@ function CommentTicket({idTicket}) {
       let resJson = await res.json();
       if (resJson.status === 200) {
         setComment("");
+        let newComment = [];
+        let sender = member.filter((person) => person._id === resJson.message.sender);
+        newComment.push({ comment: resJson.message, senderInfo: sender });
+        setCommentSocket([...commentSocket, newComment]);
+        if (messagesEndRef.current) {
+          messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+          setHaveNewComment(false);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -100,7 +111,7 @@ function CommentTicket({idTicket}) {
           className="w-full min-h-[250px] max-h-[250px] overflow-y-scroll bg-slate-100 shadow-inner"
         >
           {isLoading && <IsLoading />}
-          {data && data.length > 0 && (
+          {data && data.length > 0 &&  (
             <Comment
               comment={data}
               limit={limit}
@@ -117,7 +128,7 @@ function CommentTicket({idTicket}) {
               total={total}
             />
           )}
-          {(!data || data.length === 0) && !isLoading && <NoComment />}
+          {(!data || data.length === 0) && !isLoading && commentSocket.length ===0 && <NoComment />}
         </div>
         <div className="flex items-center py-2">
           <textarea

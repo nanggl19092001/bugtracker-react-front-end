@@ -25,6 +25,7 @@ function GetComment(url, reload) {
         if (err.name === "AbortError") {
         } else {
           setError(err.message);
+          setData([])
           setIsLoading(false);
         }
       });
