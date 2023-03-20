@@ -126,6 +126,7 @@ function CommentProject(props) {
               haveNewComment={haveNewComment}
               setHaveNewComment={setHaveNewComment}
               total={total}
+              isLoading = {isLoading}
             />
           )}
           {(!data || data.length === 0) && !isLoading && <NoComment />}

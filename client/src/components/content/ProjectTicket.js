@@ -5,12 +5,13 @@ import { useContext, useState } from "react";
 import ModalNewTicket from "../notify/ModalNewTicket";
 import Empty from "./Empty";
 import Pagination from "../button/Pagination";
+import IsLoading from "../notify/IsLoading";
 
 function ProjectTicket(props) {
   const { id } = useParams();
 
   const { SERVER_DOMAIN, token } = useContext(HomeContext);
-  const { data: ticket, count } = GetProject(
+  const { data: ticket, count, isLoading } = GetProject(
     `${SERVER_DOMAIN}/user/ticket/project?token=${token}&id=${id}`,
     props.reload
   );
@@ -56,6 +57,7 @@ function ProjectTicket(props) {
           reload={props.reload}
           setReload={props.setReload}
         />
+        {isLoading && <IsLoading/>}
         {ticket && ticket.length === 0 && <Empty />}
         {ticket && ticket.length > 0 && (
           <table className="table-fixed w-full min-h-[250px] py-2 font-light border-b border-gray-200">

@@ -2,10 +2,11 @@ import { HomeContext } from "../../Context/HomeContext";
 import { ProjectContext } from "../../Context/ProjectContext";
 import GetUser from "../../FetchData/GetUser";
 import React, { useContext, useState } from "react";
+import IsLoading from "../notify/IsLoading";
 
 function Member(props) {
   const { SERVER_DOMAIN, token, user } = useContext(HomeContext);
-  const {projectId, member, reload, setReload} = useContext(ProjectContext);
+  const {projectId, member, userIsLoading, reload, setReload} = useContext(ProjectContext);
   const [keyword, setKeyword] = useState("");
   const { data: users, error } = GetUser(
     `${SERVER_DOMAIN}/user/search?token=${token}&key=${keyword}`
@@ -82,6 +83,7 @@ function Member(props) {
   return (
     <div className="shadow-md">
       <div className="mx-4 my-2">
+        {userIsLoading && <IsLoading/>}
         <h2 className="text-lg text-text-color font-bold">Member</h2>
         <div
           className="list-member grid grid-cols-1 gap-1 drop-shadow-md

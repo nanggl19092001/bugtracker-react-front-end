@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { convertTimeToDMY, countTimeAgo } from "../../utils/ConvertTime";
 
 function Comment(props) {
@@ -8,6 +9,10 @@ function Comment(props) {
     });
     props.setHaveNewComment(false);
   };
+  const [isLoadMore, setIsLoadMore] = useState(false);
+  useEffect(() => {
+    setIsLoadMore(false);
+  }, [props.isVisible]);
   return (
     <div className="comment">
       {props.comment.map((item, index) => (
@@ -36,12 +41,20 @@ function Comment(props) {
           </div>
         </div>
       ))}
+      {isLoadMore && (
+        <div className="flex items-center justify-center">
+          <div className="w-5 h-5 border-2 border-t-2 border-t-blue-500 border-white rounded-full animate-spin"></div>
+        </div>
+      )}
       {props.isGreaterLimit && (
         <div className="flex justify-center gap-4 text-xs text-slate-400">
           <button
-            className={`${(props.total - props.limit <= props.limit) && `hidden`}`}
+            className={`${
+              props.total - props.limit <= props.limit && `hidden`
+            }`}
             onClick={() => {
-              props.setLimit(props.limit + props.limit );
+              setIsLoadMore(true);
+              props.setLimit(props.limit + props.limit);
             }}
           >
             Read more ({`+${props.limit}`})
@@ -49,6 +62,7 @@ function Comment(props) {
           <button
             className={`${props.total <= props.limit && `hidden`}`}
             onClick={() => {
+              setIsLoadMore(true);
               props.setLimit(props.total + props.commentSocket.length);
               props.setIsGreaterLimit(false);
               props.setCommentSocket([]);

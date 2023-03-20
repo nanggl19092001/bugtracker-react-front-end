@@ -11,12 +11,12 @@ export const ProjectProvider = ({ children }) => {
   const projectId = idParam.id;
   const { token } = useContext(AppContext);
   const [reload, setReload] = useState(false);
-  const { data: member } = GetUser(
+  const { data: member, isLoading: userIsLoading } = GetUser(
     `${SERVER_DOMAIN}/user/project/member?token=${token}&id=${projectId}`,
     reload
   );
   return (
-    <ProjectContext.Provider value={{ projectId, member, reload, setReload }}>
+    <ProjectContext.Provider value={{ projectId, member,userIsLoading, reload, setReload }}>
       {children}
     </ProjectContext.Provider>
   );

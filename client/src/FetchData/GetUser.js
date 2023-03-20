@@ -3,6 +3,7 @@ import { useState, useEffect} from "react";
 
 const GetUser = (url, reload) => {
   const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -16,6 +17,7 @@ const GetUser = (url, reload) => {
         return res.json();
       })
       .then((data) => {
+        setIsLoading(false);
         setData(data.data);
         setError(null);
       })
@@ -28,7 +30,7 @@ const GetUser = (url, reload) => {
     return () => abortCont.abort();
   }, [url, reload]);
 
-  return { data, error };
+  return { data, isLoading, error };
 };
 
 export default GetUser;
