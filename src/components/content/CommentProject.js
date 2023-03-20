@@ -4,11 +4,11 @@ import GetComment from "../../FetchData/GetComment";
 import Comment from "./Comment";
 import NoComment from "./NoComment";
 import IsLoading from "../notify/IsLoading";
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
 import { ProjectContext } from "../../Context/ProjectContext";
 
 function CommentProject(props) {
-  const { SERVER_DOMAIN, token, user } = useContext(HomeContext);
+  const { SERVER_DOMAIN, token } = useContext(HomeContext);
   const [limit, setLimit] = useState(5);
   const { data, isLoading, total } = GetComment(
     `${SERVER_DOMAIN}/user/comment?token=${token}&id=${props.idProject}&limit=${limit}`
@@ -22,26 +22,26 @@ function CommentProject(props) {
   const frameCommentRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const [haveNewComment, setHaveNewComment] = useState(false);
-  useEffect(() => {
-    const socket = io(SERVER_DOMAIN);
-    socket.emit("join-room", props.idProject);
-    socket.on("message", (data) => {
-      let sender = member.filter((person) => person._id === data.sender);
-      let newComment = [];
-      newComment.push({ comment: data, senderInfo: sender });
-      setCommentSocket([...commentSocket, newComment]);
-      setHaveNewComment(true);
-      if (data.sender === user.id) {
-        if(messagesEndRef.current){
-          messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-          setHaveNewComment(false);
-        }
-      }
-    });
-    return () => {
-      socket.removeAllListeners();
-    };
-  }, [props.idProject, commentSocket, member, user, SERVER_DOMAIN]);
+  // useEffect(() => {
+  //   const socket = io(SERVER_DOMAIN);
+  //   socket.emit("join-room", props.idProject);
+  //   socket.on("message", (data) => {
+  //     let sender = member.filter((person) => person._id === data.sender);
+  //     let newComment = [];
+  //     newComment.push({ comment: data, senderInfo: sender });
+  //     setCommentSocket([...commentSocket, newComment]);
+  //     setHaveNewComment(true);
+  //     if (data.sender === user.id) {
+  //       if(messagesEndRef.current){
+  //         messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  //         setHaveNewComment(false);
+  //       }
+  //     }
+  //   });
+  //   return () => {
+  //     socket.removeAllListeners();
+  //   };
+  // }, [props.idProject, commentSocket, member, user, SERVER_DOMAIN]);
   useEffect(() => {
     if (messagesEndRef.current && !isVisible) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -85,6 +85,16 @@ function CommentProject(props) {
       let resJson = await res.json();
       if (resJson.status === 200) {
         setComment("");
+        let newComment = [];
+        let sender = member.filter(
+          (person) => person._id === resJson.message.sender
+        );
+        newComment.push({ comment: resJson.message, senderInfo: sender });
+        setCommentSocket([...commentSocket, newComment]);
+        if (messagesEndRef.current) {
+          messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+          setHaveNewComment(false);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -116,6 +126,7 @@ function CommentProject(props) {
               haveNewComment={haveNewComment}
               setHaveNewComment={setHaveNewComment}
               total={total}
+              isLoading = {isLoading}
             />
           )}
           {(!data || data.length === 0) && !isLoading && <NoComment />}

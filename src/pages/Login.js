@@ -39,7 +39,7 @@ function Login({ setIsLogin }) {
         navigate("/");
       } else {
         setMessage(resJson.message);
-        console.log(resJson);
+        console.log(resJson.message);
       }
     } catch (error) {
       console.log(error);

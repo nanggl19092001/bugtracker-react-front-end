@@ -73,7 +73,7 @@ function Pagination(props) {
         </nav>
       </div>
       <div
-        className={`flex justify-end px-4 pb-2 ${
+        className={`flex justify-center lg:justify-end px-4 pb-2 ${
           props.total === 0 ? "hidden" : ""
         }`}
       >
