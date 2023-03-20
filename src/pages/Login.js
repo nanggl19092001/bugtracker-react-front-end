@@ -4,12 +4,14 @@ import Notification from "../components/notify/Notification";
 import { AppContext } from "../Context/AppContext";
 import { SERVER_DOMAIN } from "../utils/Constaint";
 import { GoogleLogin } from "@react-oauth/google";
+import IsLoading from "../components/notify/IsLoading";
 
 function Login({ setIsLogin }) {
   const { notify, setNotify } = useContext(AppContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleEmail = (e) => {
@@ -19,6 +21,7 @@ function Login({ setIsLogin }) {
     setPassword(e.target.value);
   };
   const handleSubmit = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     try {
       let res = await fetch(`${SERVER_DOMAIN}/auth/signin`, {
@@ -44,10 +47,13 @@ function Login({ setIsLogin }) {
     } catch (error) {
       console.log(error);
     }
+    setIsLoading(false);
   };
   const responseMessage = async (response) => {
     try {
-      let res = await fetch(`${SERVER_DOMAIN}/auth/signin?token=${response.credential}&id=${response.clientId}`);
+      let res = await fetch(
+        `${SERVER_DOMAIN}/auth/signin?token=${response.credential}&id=${response.clientId}`
+      );
       let resJson = await res.json();
       if (resJson.status === 200) {
         localStorage.setItem("token", resJson.access_token);
@@ -142,6 +148,7 @@ function Login({ setIsLogin }) {
                     Register
                   </Link>
                 </p>
+                {isLoading && <IsLoading />}
               </div>
               {message ? (
                 <div
