@@ -7,6 +7,11 @@ function Option({ itemId, isOpen, setIsOpen, idIsOpen, setId }) {
     <button
       className="mt-1 ml-8 focus:outline-none"
       onClick={() => handleShowOption(itemId)}
+      onBlur={() => {
+        setTimeout(() => {
+          setIsOpen(false);
+        },400);
+      }}
     >
       <svg
         className="w-5 h-5 text-gray-400 hover:text-gray-600"

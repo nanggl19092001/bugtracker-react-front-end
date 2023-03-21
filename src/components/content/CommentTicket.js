@@ -7,16 +7,14 @@ import IsLoading from "../notify/IsLoading";
 import { ProjectContext } from "../../Context/ProjectContext";
 // import { io } from "socket.io-client";
 
-function CommentTicket({idTicket}) {
+function CommentTicket({ idTicket }) {
   const { SERVER_DOMAIN, token, user } = useContext(HomeContext);
   const [limit, setLimit] = useState(5);
   const { data, isLoading, total } = GetComment(
     `${SERVER_DOMAIN}/user/comment?token=${token}&id=${idTicket}&limit=${limit}`
   );
   const { member } = useContext(ProjectContext);
-  const [isGreaterLimit, setIsGreaterLimit] = useState(
-    true
-  );
+  const [isGreaterLimit, setIsGreaterLimit] = useState(true);
   const [commentSocket, setCommentSocket] = useState([]);
   const messagesEndRef = useRef(null);
   const frameCommentRef = useRef(null);
@@ -42,13 +40,13 @@ function CommentTicket({idTicket}) {
   // }, [idTicket, commentSocket, member, user, SERVER_DOMAIN]);
   useEffect(() => {
     setCommentSocket([]);
-  },[idTicket])
+  }, [idTicket]);
   useEffect(() => {
     if (messagesEndRef.current && !isVisible) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
       setHaveNewComment(false);
     }
-  }, [commentSocket, isVisible]);
+  }, [isVisible]);
   useEffect(() => {
     const frameComment = frameCommentRef.current;
     const onScroll = () => {
@@ -88,7 +86,9 @@ function CommentTicket({idTicket}) {
       if (resJson.status === 200) {
         setComment("");
         let newComment = [];
-        let sender = member.filter((person) => person._id === resJson.message.sender);
+        let sender = member.filter(
+          (person) => person._id === resJson.message.sender
+        );
         newComment.push({ comment: resJson.message, senderInfo: sender });
         setCommentSocket([...commentSocket, newComment]);
         if (messagesEndRef.current) {
@@ -111,7 +111,7 @@ function CommentTicket({idTicket}) {
           className="w-full min-h-[250px] max-h-[250px] overflow-y-scroll bg-slate-100 shadow-inner"
         >
           {isLoading && <IsLoading />}
-          {data && data.length > 0 &&  (
+          {((data && data.length > 0) || commentSocket.length > 0) && (
             <Comment
               comment={data}
               limit={limit}
@@ -128,7 +128,9 @@ function CommentTicket({idTicket}) {
               total={total}
             />
           )}
-          {(!data || data.length === 0) && !isLoading && commentSocket.length ===0 && <NoComment />}
+          {(!data || data.length === 0) &&
+            !isLoading &&
+            commentSocket.length === 0 && <NoComment />}
         </div>
         <div className="flex items-center py-2">
           <textarea
