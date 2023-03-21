@@ -128,9 +128,9 @@ function CommentTicket({ idTicket }) {
               total={total}
             />
           )}
-          {(!data || data.length === 0) &&
-            !isLoading &&
-            commentSocket.length === 0 && <NoComment />}
+          {((!data && commentSocket.length === 0) ||
+            (data && data.length === 0 && commentSocket.length === 0)) &&
+            !isLoading && <NoComment />}
         </div>
         <div className="flex items-center py-2">
           <textarea
