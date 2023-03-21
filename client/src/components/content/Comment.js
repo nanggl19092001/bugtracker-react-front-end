@@ -15,7 +15,7 @@ function Comment(props) {
   }, [props.isVisible]);
   return (
     <div className="comment">
-      {props.comment.map((item, index) => (
+      {props.comment && props.comment.map((item, index) => (
         <div className="flex items-center py-2 px-2" key={index}>
           <img
             className="w-10 h-10 rounded-full"
@@ -46,7 +46,7 @@ function Comment(props) {
           <div className="w-5 h-5 border-2 border-t-2 border-t-blue-500 border-white rounded-full animate-spin"></div>
         </div>
       )}
-      {props.isGreaterLimit && (
+      {props.isGreaterLimit && props.comment && (
         <div className="flex justify-center gap-4 text-xs text-slate-400">
           <button
             className={`${
