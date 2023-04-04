@@ -34,6 +34,7 @@ function InfoTicket(props) {
       {props.ticket &&
         props.ticket.map((item) => (
           <div key={item._id} className="mx-4 my-2 flex flex-col">
+            <p>{item._id}</p>
             {showModal && (
               <ModalDelete
                 setShowModal={setShowModal}
@@ -133,6 +134,16 @@ function InfoTicket(props) {
                 </h2>
                 <q className="text-sm text-gray-500 italic">{item.asignee}</q>
               </div>
+            </div>
+            <div className="w-full">
+              <h2 className="p-1 bg-slate-200 text-blue-500 text-sm font-bold w-fit rounded-md">
+                Documents
+              </h2>
+              {/* <UploadFile
+                domain={SERVER_DOMAIN}
+                ticketId={item._id}
+                token={token}
+              /> */}
             </div>
           </div>
         ))}

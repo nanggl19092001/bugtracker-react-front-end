@@ -108,10 +108,10 @@ function CommentProject(props) {
         </h2>
         <div
           ref={frameCommentRef}
-          className="w-full min-h-[250px] max-h-[250px] overflow-y-scroll bg-slate-100 shadow-inner"
+          className="w-full min-h-[250px] max-h-[250px] overflow-y-scroll overscroll-none bg-slate-100 shadow-inner"
         >
           {isLoading && <IsLoading />}
-          {((data && data.length > 0) || (commentSocket.length > 0)) && (
+          {((data && data.length > 0) || commentSocket.length > 0) && (
             <Comment
               comment={data}
               limit={limit}
@@ -129,7 +129,8 @@ function CommentProject(props) {
               isLoading={isLoading}
             />
           )}
-          {(!data || (data.length === 0 && commentSocket.length === 0)) &&
+          {((!data && commentSocket.length === 0) ||
+            (data && data.length === 0 && commentSocket.length === 0)) &&
             !isLoading && <NoComment />}
         </div>
         <div className="flex items-center py-2">

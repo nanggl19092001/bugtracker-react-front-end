@@ -1,11 +1,13 @@
 import React, { useContext, useRef, useState } from "react";
-
 import Project from "./Project";
 import { HomeContext } from "../../Context/HomeContext";
 import Notification from "../notify/Notification";
 import IsLoading from "../notify/IsLoading";
+import { PieChart } from "react-minimal-pie-chart";
+
 function Dashboard() {
-  const { project, error, isLoading, SERVER_DOMAIN, token, reload, setReload} = useContext(HomeContext);
+  const { project, error, isLoading, SERVER_DOMAIN, token, reload, setReload } =
+    useContext(HomeContext);
   const [isOpen, setIsOpen] = useState(false);
   const toggleModal = () => {
     setIsOpen(!isOpen);
@@ -26,7 +28,9 @@ function Dashboard() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: name.current.value.charAt(0).toUpperCase() + name.current.value.slice(1),
+          name:
+            name.current.value.charAt(0).toUpperCase() +
+            name.current.value.slice(1),
           description: description.current.value,
           deadline: time.current.value,
         }),
@@ -35,7 +39,7 @@ function Dashboard() {
       if (resJson.status === 200) {
         setNotify(resJson.message);
         setIsOpen(false);
-        setReload(!reload)
+        setReload(!reload);
       } else {
         setMessage(resJson.message);
       }
@@ -43,6 +47,17 @@ function Dashboard() {
       console.log(err);
     }
   };
+  const data = [
+    { title: "One", value: 10, color: "#9499a2" },
+    { title: "Two", value: 10, color: "#2e64e7" },
+    { title: "Three", value: 20, color: "#111826" },
+  ];
+  const dataSeverity = [
+    { title: "Low", value: 15, color: "#9499a2" },
+    { title: "Minor", value: 20, color: "#111826" },
+    { title: "Major", value: 10, color: "#2e64e7" },
+    { title: "Critical", value: 20, color: "#d82b2a" },
+  ];
   return (
     <div className="px-8 py-8">
       {notify && <Notification message={notify} type="success" />}
@@ -68,7 +83,9 @@ function Dashboard() {
             </div>
             <div className="bg-white rounded-lg px-4 pt-5 pb-4 overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
               <form>
-                <h2 className="text-xl font-bold pb-4 text-center">New Project</h2>
+                <h2 className="text-xl font-bold pb-4 text-center">
+                  New Project
+                </h2>
                 <div className="mb-4">
                   <label
                     className="block text-sm font-medium mb-2 after:content-['*'] after:text-red-500"
@@ -136,11 +153,7 @@ function Dashboard() {
             </div>
           </div>
         )}
-        {isLoading ? (
-          <IsLoading/>
-        ) : (
-          project && <Project project={project}/>
-        )}
+        {isLoading ? <IsLoading /> : project && <Project project={project} />}
         {error && <div className="text-center">{error}</div>}
       </div>
       <div className="summary grid grid-cols-3 gap-4">
@@ -148,16 +161,73 @@ function Dashboard() {
           <h2 className="text-md px-4 py-2 text-text-color font-bold">
             Ticket by Type
           </h2>
+          <div className="flex justify-center">
+            <div className="w-[50%] h-[50%] m-2">
+              <PieChart
+                data={data}
+                startAngle={180}
+                label={(data) => data.dataEntry.title}
+                labelPosition={70}
+                labelStyle={{
+                  fill: "white",
+                  fontSize: "5px",
+                  fontWeight: "bold",
+                }}
+                animate={true}
+                animationDuration={500}
+                animationEasing="linear"
+                reveal={100}
+              />
+            </div>
+          </div>
         </div>
         <div className="my-4 w-full h-fit bg-white rounded border-b border-gray-200">
           <h2 className="text-md px-4 py-2 text-text-color font-bold">
             Ticket by Priority
           </h2>
+          <div className="flex justify-center">
+            <div className="w-[50%] h-[50%] m-2">
+              <PieChart
+                data={dataSeverity}
+                startAngle={180}
+                label={(data) => data.dataEntry.title}
+                labelPosition={70}
+                labelStyle={{
+                  fill: "white",
+                  fontSize: "5px",
+                  fontWeight: "bold",
+                }}
+                animate={true}
+                animationDuration={500}
+                animationEasing="ease-out"
+                reveal={100}
+              />
+            </div>
+          </div>
         </div>
         <div className="my-4 w-full h-fit bg-white rounded border-b border-gray-200">
           <h2 className="text-md px-4 py-2 text-text-color font-bold">
             Ticket by Status
           </h2>
+          <div className="flex justify-center">
+            <div className="w-[50%] h-[50%] m-2">
+              <PieChart
+                data={data}
+                startAngle={180}
+                label={(data) => data.dataEntry.title}
+                labelPosition={70}
+                labelStyle={{
+                  fill: "white",
+                  fontSize: "5px",
+                  fontWeight: "bold",
+                }}
+                animate={true}
+                animationDuration={500}
+                animationEasing="ease-out"
+                reveal={100}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
