@@ -51,12 +51,16 @@ function CommentProject(props) {
   useEffect(() => {
     const frameComment = frameCommentRef.current;
     const onScroll = () => {
-      const elementPos = messagesEndRef.current.getBoundingClientRect().bottom;
-      const frameBot = frameComment.getBoundingClientRect().bottom;
-      if (elementPos > frameBot + 100) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
+      try {
+        const elementPos = messagesEndRef.current.getBoundingClientRect().bottom;
+        const frameBot = frameComment.getBoundingClientRect().bottom;
+        if (elementPos > frameBot + 100) {
+          setIsVisible(true);
+        } else {
+          setIsVisible(false);
+        }
+      } catch (error) {
+        
       }
     };
     frameComment.addEventListener("scroll", onScroll);

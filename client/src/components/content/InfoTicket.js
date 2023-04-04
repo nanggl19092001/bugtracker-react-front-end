@@ -1,10 +1,30 @@
 import { useState, useContext } from "react";
 import { HomeContext } from "../../Context/HomeContext";
+import { ProjectContext } from "../../Context/ProjectContext";
 import { convertTimeToDMY, countTimeAgo } from "../../utils/ConvertTime";
 import ModalDelete from "../notify/ModalDelete";
+
 function InfoTicket(props) {
   const { token, SERVER_DOMAIN } = useContext(HomeContext);
   const [showModal, setShowModal] = useState(false);
+  const { member } = useContext(ProjectContext);
+
+  const handleMemberName = (id) => {
+    let person = member.filter((item) => item._id === id);
+    return person[0].firstname;
+  };
+
+  const handleMemberAssignee = (idList) => {
+    let assigneeList = idList.split(",");
+    return assigneeList.map((item, index) => {
+      if (index !== assigneeList.length - 1) {
+        return handleMemberName(item) + ", ";
+      } else {
+        return handleMemberName(item);
+      }
+    });
+  };
+
   const handleDelete = async (e) => {
     e.preventDefault();
     try {
@@ -29,12 +49,12 @@ function InfoTicket(props) {
     }
     setShowModal(false);
   };
+
   return (
-    <div className="info col-span-1 shadow-md">
+    <div className="info col-span-1 shadow-md whitespace-normal">
       {props.ticket &&
         props.ticket.map((item) => (
           <div key={item._id} className="mx-4 my-2 flex flex-col">
-            <p>{item._id}</p>
             {showModal && (
               <ModalDelete
                 setShowModal={setShowModal}
@@ -125,14 +145,16 @@ function InfoTicket(props) {
                   Creator
                 </h2>
                 <p className="text-sm text-gray-500 font-semibold">
-                  {item.creator}
+                  {handleMemberName(item.creator)}
                 </p>
               </div>
               <div className="2xl:col-span-2">
                 <h2 className="p-1 bg-slate-200 text-blue-500 text-sm font-bold w-fit rounded-md">
                   Assignee
                 </h2>
-                <q className="text-sm text-gray-500 italic">{item.asignee}</q>
+                <q className="text-sm text-gray-500 italic">
+                  {handleMemberAssignee(item.asignee)}
+                </q>
               </div>
             </div>
             <div className="w-full">
