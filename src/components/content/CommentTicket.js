@@ -50,13 +50,16 @@ function CommentTicket({ idTicket }) {
   useEffect(() => {
     const frameComment = frameCommentRef.current;
     const onScroll = () => {
-      const elementPos = messagesEndRef.current.getBoundingClientRect().bottom;
-      const frameBot = frameComment.getBoundingClientRect().bottom;
-      if (elementPos > frameBot + 100) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
+      try {
+        const elementPos =
+          messagesEndRef.current.getBoundingClientRect().bottom;
+        const frameBot = frameComment.getBoundingClientRect().bottom;
+        if (elementPos > frameBot + 100) {
+          setIsVisible(true);
+        } else {
+          setIsVisible(false);
+        }
+      } catch (error) {}
     };
     frameComment.addEventListener("scroll", onScroll);
     return () => {
@@ -108,7 +111,7 @@ function CommentTicket({ idTicket }) {
         </h2>
         <div
           ref={frameCommentRef}
-          className="w-full min-h-[250px] max-h-[250px] overflow-y-scroll bg-slate-100 shadow-inner"
+          className="w-full min-h-[250px] max-h-[250px] overflow-y-scroll overscroll-none bg-slate-100 shadow-inner"
         >
           {isLoading && <IsLoading />}
           {((data && data.length > 0) || commentSocket.length > 0) && (
