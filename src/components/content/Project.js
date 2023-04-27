@@ -90,7 +90,7 @@ function Project({ project }) {
     try {
       let res = await fetch(`${SERVER_DOMAIN}/user/project?token=${token}`, {
         method: "PUT",
-        headers: {
+        headers: {                      
           "Content-Type": "application/json",
         },
         body: JSON.stringify({

@@ -6,12 +6,18 @@ import ModalNewTicket from "../notify/ModalNewTicket";
 import Empty from "./Empty";
 import Pagination from "../button/Pagination";
 import IsLoading from "../notify/IsLoading";
+import { ProjectContext } from "../../Context/ProjectContext";
 
 function ProjectTicket(props) {
-  const { id } = useParams();
+const { id } = useParams();
 
+  const { member } = useContext(ProjectContext);
   const { SERVER_DOMAIN, token } = useContext(HomeContext);
-  const { data: ticket, count, isLoading } = GetProject(
+  const {
+    data: ticket,
+    count,
+    isLoading,
+  } = GetProject(
     `${SERVER_DOMAIN}/user/ticket/project?token=${token}&id=${id}`,
     props.reload
   );
@@ -23,10 +29,7 @@ function ProjectTicket(props) {
   for (let i = 1; i <= totalPage; i++) {
     page.push(i);
   }
-  // const getFullName = (idMember) => {
-  //   let thisPerson = member.filter((person) => person._id === idMember);
-  //   return thisPerson[0].firstname + thisPerson[0].lastname;
-  // };
+
   const [isOpenTicketModal, setIsOpenTicketModal] = useState(false);
   const toggleTicketModal = () => {
     setIsOpenTicketModal(!isOpenTicketModal);
@@ -37,6 +40,27 @@ function ProjectTicket(props) {
       : props.setTicketChoose("");
     props.setThisTicket(ticket.filter((item) => item._id === id));
   };
+
+  const handleMemberName = (id) => {
+    let person = member && member.filter((item) => item._id === id);
+    if (person) {
+      return person[0].firstname;
+    }
+  };
+
+  const handleMemberAssignee = (idList) => {
+    let assigneeList = member && idList.split(",");
+    if (assigneeList) {
+      return assigneeList.map((item, index) => {
+        if (index !== assigneeList.length - 1) {
+          return handleMemberName(item) + ", ";
+        } else {
+          return handleMemberName(item);
+        }
+      });
+    }
+  };
+
   return (
     <div className="tickets col-span-2 shadow-md">
       <div className="mx-4 my-2">
@@ -57,7 +81,7 @@ function ProjectTicket(props) {
           reload={props.reload}
           setReload={props.setReload}
         />
-        {isLoading && <IsLoading/>}
+        {isLoading && <IsLoading />}
         {ticket && ticket.length === 0 && <Empty />}
         {ticket && ticket.length > 0 && (
           <table className="table-fixed w-full min-h-[250px] py-2 font-light border-b border-gray-200">
@@ -85,8 +109,8 @@ function ProjectTicket(props) {
                   <td className="whitespace-nowrap overflow-hidden text-ellipsis ">
                     {item.description}
                   </td>
-                  <td className="whitespace-nowrap overflow-hidden text-ellipsis">
-                    {item.creator}
+                  <td className="whitespace-nowrap overflow-hidden text-ellipsis font-light italic">
+                    {handleMemberAssignee(item.asignee)}
                   </td>
                   <td className="relative"></td>
                 </tr>
