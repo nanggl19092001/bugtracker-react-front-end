@@ -4,7 +4,7 @@ import { HomeContext } from "../Context/HomeContext";
 
 function Header() {
     const navigate = useNavigate()
-    const {user} = useContext(HomeContext)
+    const {user, setProfile} = useContext(HomeContext)
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -12,6 +12,7 @@ function Header() {
         navigate("/login");
         window.location.reload();
       };
+      
   return (
     <div className="header sticky top-0 w-full h-14 bg-white drop-shadow-sm z-50">
       <div className="search flex w-1/2 h-full justify-start items-center float-left">
@@ -55,7 +56,7 @@ function Header() {
             d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
           ></path>
         </svg>
-        {user.firstname.charAt(0).toUpperCase() + user.firstname.slice(1)}
+        {user && (user.firstname.charAt(0).toUpperCase() + user.firstname.slice(1))}
         <div className="relative inline-block z-0">
           <svg
             className="peer w-6 h-full cursor-pointer text-slate-400 mx-3 hover:text-slate-600"
@@ -78,7 +79,10 @@ function Header() {
           before:content-['.'] before:text-white before:w-20 before:z-20 
           before:absolute before:top-[-20px]
           before:right-[1px] before:block">
-            <li className="px-4 py-1 hover:text-bg-nav hover:bg-gray-200"><a href="#a">Profile</a></li>
+            <li className="px-4 py-1 hover:text-bg-nav hover:bg-gray-200"><a href="#a" onClick={() => {
+              setProfile(true)
+            }}>Profile</a>
+            </li>
             <li className="px-4 py-1 hover:text-bg-nav hover:bg-gray-200"><a href="#a">Setting</a></li>
             <li className="px-4 py-1 text-red-500 border-t border-gray-300
              hover:bg-gray-200"><a href="#logout" onClick={handleLogout}>Log out</a></li>

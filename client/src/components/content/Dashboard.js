@@ -81,7 +81,7 @@ function Dashboard() {
             >
               <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
-            <div className="bg-white rounded-lg px-4 pt-5 pb-4 overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+            <div className="bg-white rounded-lg px-4 pt-5 pb-4 overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full box-border">
               <form>
                 <h2 className="text-xl font-bold pb-4 text-center">
                   New Project

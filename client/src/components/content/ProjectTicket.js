@@ -9,7 +9,7 @@ import IsLoading from "../notify/IsLoading";
 import { ProjectContext } from "../../Context/ProjectContext";
 
 function ProjectTicket(props) {
-  const { id } = useParams();
+const { id } = useParams();
 
   const { member } = useContext(ProjectContext);
   const { SERVER_DOMAIN, token } = useContext(HomeContext);
