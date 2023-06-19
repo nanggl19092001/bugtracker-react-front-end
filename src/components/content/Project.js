@@ -80,6 +80,7 @@ function Project({ project }) {
     setShowModal(false);
   };
   //handle edit project
+  //it't ok
   const [message, setMessage] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
   const name = useRef("");
