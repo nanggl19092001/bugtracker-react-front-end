@@ -1,29 +1,29 @@
 import { useState, useContext } from "react";
 import { HomeContext } from "../../Context/HomeContext";
-import { ProjectContext } from "../../Context/ProjectContext";
+// import { ProjectContext } from "../../Context/ProjectContext";
 import { convertTimeToDMY, countTimeAgo } from "../../utils/ConvertTime";
 import ModalDelete from "../notify/ModalDelete";
 
 function  InfoTicket(props) {
   const { token, SERVER_DOMAIN } = useContext(HomeContext);
   const [showModal, setShowModal] = useState(false);
-  const { member } = useContext(ProjectContext);
+  // const { member } = useContext(ProjectContext);
 
-  const handleMemberName = (id) => {
-    let person = member.filter((item) => item._id === id);
-    return person[0].firstname;
-  };
+  // const handleMemberName = (id) => {
+  //   let person = member.filter((item) => item._id === id);
+  //   return person[0].firstname;
+  // };
 
-  const handleMemberAssignee = (idList) => {
-    let assigneeList = idList.split(",");
-    return assigneeList.map((item, index) => {
-      if (index !== assigneeList.length - 1) {
-        return handleMemberName(item) + ", ";
-      } else {
-        return handleMemberName(item);
-      }
-    });
-  };
+  // const handleMemberAssignee = (idList) => {
+  //   let assigneeList = idList.split(",");
+  //   return assigneeList.map((item, index) => {
+  //     if (index !== assigneeList.length - 1) {
+  //       return handleMemberName(item) + ", ";
+  //     } else {
+  //       return handleMemberName(item);
+  //     }
+  //   });
+  // };
 
   const handleDelete = async (e) => {
     e.preventDefault();
