@@ -115,7 +115,7 @@ function Member(props) {
                       transition-all duration-200 ease-in-out hover:text-[#8b8b8b] dark:text-black dark:hover:text-neutral-100"
                 >
                   {props.thisProject[0] &&
-                   (props.thisProject[0].creator._id === user.id && props.thisProject[0].creator._id !== item._id) && (
+                   (user && props.thisProject[0].creator._id === user.id && props.thisProject[0].creator._id !== item._id) && (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
