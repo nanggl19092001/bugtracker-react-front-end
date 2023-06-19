@@ -244,7 +244,7 @@ function Project({ project }) {
                           {item.creator.firstname}
                         </td>
                         <td className="relative">
-                          {item.project.creator === user.id && (
+                          {user && item.project.creator === user.id && (
                             <Option
                               itemId={item.project._id}
                               isOpen={isOpen}
