@@ -161,11 +161,6 @@ function InfoTicket(props) {
               <h2 className="p-1 bg-slate-200 text-blue-500 text-sm font-bold w-fit rounded-md">
                 Documents
               </h2>
-              {/* <UploadFile
-                domain={SERVER_DOMAIN}
-                ticketId={item._id}
-                token={token}
-              /> */}
             </div>
           </div>
         ))}
